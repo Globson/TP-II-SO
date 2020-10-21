@@ -1,7 +1,68 @@
 #ifndef P_GERENCIADOR_PROCESSOS_H
 #define P_GERENCIADOR_PROCESSOS_H
-#include <stdio.h>
-#include <stdlib.h>
+#include "P_Controle.h"
 
 
+typedef struct Time{
+  int time;
+}Time;
+
+typedef struct Processo{
+  pid_t pid;
+  pid_t pid_do_pai;
+  int prioridade;
+  char estado[15];
+  int startupTime;
+  int CotaCPU;
+  EstadoProcesso Estado_Processo;
+}Processo;
+
+typedef struct Cpu {
+  Programa programa;
+  int contadorProgramaAtual;
+  int valorInteiro;
+  int fatiaTempo;
+  int fatiaTempoUsada;
+} Cpu;
+
+typedef struct EstadoBloqueado {
+    Processo vetor[MAXTAM];
+    int Frente, Tras;
+} EstadoBloqueado;
+
+typedef struct EstadoPronto {
+    Processo vetor[MAXTAM];
+    int Frente, Tras;
+} EstadoPronto;
+
+typedef struct EstadoEmExec {
+    int iPcbTable; //armazena o índice PcbTable do processo simulado atualmente em execução
+} EstadoEmExec;
+
+typedef struct PcbTable { //é um array com uma entrada para cada processo simulado que não terminou sua execução ainda.
+    Processo vetor[MAXTAM];
+    int Primeiro, Ultimo;
+} PcbTable;
+
+void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloqueado *estadobloqueado,PcbTable *pcbTable, Cpu *cpu, Time *time);
+Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai);
+Processo criarProcessoSimulado(Time *time, Processo *processoPai);
+Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
+void ImprimirCPU(Cpu *cpu);
+void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
+void FFVaziaPronto(EstadoPronto *estadopronto);
+void FFVaziaBloqueado(EstadoBloqueado *estadobloqueado);
+int VaziaPronto(EstadoPronto *estadopronto);
+int VaziaBloqueado(EstadoBloqueado *estadobloqueado);
+void EnfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
+void EnfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
+void DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
+int DesenfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
+void ImprimePronto(EstadoPronto *estadopronto);
+void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
+void FLVaziaPcbTable(PcbTable *pcbTable);
+int VaziaPcbTable(PcbTable *pcbTable);
+void InserePcbTable(PcbTable *pcbTable, Processo processo);
+void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo);
+void ImprimePcbTable(PcbTable *pcbTable);
 #endif //P_GERENCIADOR_PROCESSOS_H

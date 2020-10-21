@@ -2,6 +2,14 @@
 #define ESTRUTURAD_DE_DADOS_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#define MAXTAM 100
+#define BUFFER 256
 
 typedef char Instrucao[20]; //Armazena uma instrução
 
@@ -17,6 +25,5 @@ typedef struct EstadoProcesso{
   int Tam;
   Instrucao Programa[20];
 }EstadoProcesso;
-
 
 #endif //ESTRUTURAD_DE_DADOS_H

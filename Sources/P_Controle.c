@@ -1,7 +1,7 @@
 #include "../Headers/P_Controle.h"
 int Executar_P_Controle(){
   int fd[2]; // File descriptor para Pipe
-  pid_t pid_m;
+  pid_t pid;
 
   char str[2], str_enviada[BUFFER];
   FILE *ArquivoControle, *ArquivoPrograma;
@@ -11,11 +11,21 @@ int Executar_P_Controle(){
     perror("pipe");
     return -1; //retorna -1 em caso de Erro
   }
-  if((pid_m = fork())<0){ //processo filho
+  if((pid = fork())<0){ //processo filho, caso fork retorne numero negativo, houve erro
     perror("fork");
     exit(1);
   }
-  if(pid_m > 0){ //processo pai
+  /* //identificação de processos pai e filho
+  if(pid == 0)
+    {
+        printf("pid do Filho: %d\n", getpid());
+    }
+    else
+    {
+        printf("pid do Pai: %d\n", getpid());
+    }
+  */
+  if(pid > 0){ //processo pai
     ArquivoControle = fopen("./Arquivos_Entrada/Controle.txt","r");
     if( ArquivoControle == NULL){
       printf("Erro ao abrir arquivo de entrada Controle.txt\n");
