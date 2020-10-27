@@ -26,17 +26,7 @@ int Executar_P_Controle(){
     }
   */
   if(pid > 0){ //processo pai
-    ArquivoControle = fopen("./Arquivos_Entrada/Controle.txt","r");
-    if( ArquivoControle == NULL){
-      printf("Erro ao abrir arquivo de entrada Controle.txt\n");
-    }
-    else{
-      while(fscanf(ArquivoControle,"%s",str) != EOF){
-        strcat(str_enviada,str);
-        strcat(str_enviada," ");
-      }
-    }
-    fclose(ArquivoControle);
+    LerArquivo(ArquivoControle,str_enviada,str); // Ler a partir de um arquivo
     //Para escrever no pai, teremos que fechar a leitura do Pipe.
     close(fd[0]);
     printf("String enviada pelo Controle(PID %i) para o Gerenciador: %s \n", getpid(),str_enviada);
@@ -50,6 +40,32 @@ int Executar_P_Controle(){
     //TODO
     return 0; // return 0 se entrou em else
   }
+}
+
+void LerArquivo(FILE *ArquivoControle,char *str_enviada,char *str){
+    ArquivoControle = fopen("./Arquivos_Entrada/Controle.txt","r");
+    if( ArquivoControle == NULL){
+      printf("Erro ao abrir arquivo de entrada Controle.txt\n");
+    }
+    else{
+      while(fscanf(ArquivoControle,"%s",str) != EOF){
+        strcat(str_enviada,str);
+        strcat(str_enviada," ");
+      }
+    }
+    fclose(ArquivoControle);
+}
+
+void LerTerminal(char *str_enviada){
+    char comando;
+    int i = 0;
+    do{
+        scanf(" %c",&comando);
+        str_enviada[i] = comando;
+        i++;
+
+    }while(comando != 'M');
+
 }
 
 void FFilaVazia(Programa *prog){
