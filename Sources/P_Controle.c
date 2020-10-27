@@ -52,7 +52,7 @@ int Executar_P_Controle(){
   }
 }
 
-void FilaVazia(Programa *prog){
+void FFilaVazia(Programa *prog){
   prog->Frente = 0;
   prog->Tras = 0;
 }

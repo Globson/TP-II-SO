@@ -3,7 +3,7 @@
 #include "Estruturas_de_Dados.h"
 
 int Executar_P_Controle();
-void FilaVazia(Programa *prog);
+void FFilaVazia(Programa *prog);
 int EstaVazia(Programa prog);
 void AdicionaProgramaFila(Programa *programa, char *instrucao);
 void RetiraProgramaFila(Programa *prog,char *instrucao);

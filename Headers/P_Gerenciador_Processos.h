@@ -15,7 +15,7 @@ typedef struct Processo{
   int startupTime;
   int CotaCPU;
   EstadoProcesso Estado_Processo;
-}Processo;
+} Processo;
 
 typedef struct Cpu {
   Programa programa;
@@ -48,6 +48,7 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai);
 Processo criarProcessoSimulado(Time *time, Processo *processoPai);
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
+//TODO down
 void ImprimirCPU(Cpu *cpu);
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
 void FFVaziaPronto(EstadoPronto *estadopronto);
