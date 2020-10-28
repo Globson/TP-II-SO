@@ -3,8 +3,8 @@ int Executar_P_Controle(){
   int fd[2]; // File descriptor para Pipe
   pid_t pid;
 
-  char str[2], str_enviada[BUFFER];
-  FILE *ArquivoControle, *ArquivoPrograma;
+  char str_enviada[BUFFER];
+  FILE *ArquivoPrograma;
 
 
   if(pipe(fd) < 0){ //pipe
@@ -26,7 +26,7 @@ int Executar_P_Controle(){
     }
   */
   if(pid > 0){ //processo pai
-    LerArquivo(ArquivoControle,str_enviada,str); // Ler a partir de um arquivo
+    LerArquivo(str_enviada); // Ler a partir de um arquivo
     //Para escrever no pai, teremos que fechar a leitura do Pipe.
     close(fd[0]);
     printf("String enviada pelo Controle(PID %i) para o Gerenciador: %s \n", getpid(),str_enviada);
@@ -42,10 +42,13 @@ int Executar_P_Controle(){
   }
 }
 
-void LerArquivo(FILE *ArquivoControle,char *str_enviada,char *str){
+int LerArquivo(char *str_enviada){ //Simplifiquei algumas coisas
+    FILE *ArquivoControle;
+    char str[2];
     ArquivoControle = fopen("./Arquivos_Entrada/Controle.txt","r");
     if( ArquivoControle == NULL){
       printf("Erro ao abrir arquivo de entrada Controle.txt\n");
+      return 0; //ERRO
     }
     else{
       while(fscanf(ArquivoControle,"%s",str) != EOF){
@@ -54,6 +57,7 @@ void LerArquivo(FILE *ArquivoControle,char *str_enviada,char *str){
       }
     }
     fclose(ArquivoControle);
+    return 1;
 }
 
 void LerTerminal(char *str_enviada){
@@ -62,8 +66,8 @@ void LerTerminal(char *str_enviada){
     do{
         scanf(" %c",&comando);
         str_enviada[i] = comando;
-        i++;
-
+        str_enviada[i+1]= ' ';
+        i+=2; //Adicionei espaços entre os caracteres para manter padrão da string.
     }while(comando != 'M');
 
 }

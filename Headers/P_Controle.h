@@ -5,7 +5,7 @@
 int Executar_P_Controle();
 void FFilaVazia(Programa *prog);
 void LerTerminal(char *str_enviada);
-void LerArquivo(FILE *ArquivoControle,char *str_enviada,char *str);
+int LerArquivo(char *str_enviada);
 int EstaVazia(Programa prog);
 void AdicionaProgramaFila(Programa *programa, char *instrucao);
 void RetiraProgramaFila(Programa *prog,char *instrucao);
