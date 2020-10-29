@@ -48,9 +48,6 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai);
 Processo criarProcessoSimulado(Time *time, Processo *processoPai);
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
-//TODO down
-void ImprimirCPU(Cpu *cpu);
-void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
 void FFVaziaPronto(EstadoPronto *estadopronto);
 void FFVaziaBloqueado(EstadoBloqueado *estadobloqueado);
 int VaziaPronto(EstadoPronto *estadopronto);
@@ -59,11 +56,14 @@ void EnfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
 void EnfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
 void DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
 int DesenfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
-void ImprimePronto(EstadoPronto *estadopronto);
-void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
 void FLVaziaPcbTable(PcbTable *pcbTable);
 int VaziaPcbTable(PcbTable *pcbTable);
 void InserePcbTable(PcbTable *pcbTable, Processo processo);
 void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo);
+//TODO 
+void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
+void ImprimirCPU(Cpu *cpu);
+void ImprimePronto(EstadoPronto *estadopronto);
+void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
 void ImprimePcbTable(PcbTable *pcbTable);
 #endif //P_GERENCIADOR_PROCESSOS_H
