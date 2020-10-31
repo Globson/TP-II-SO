@@ -1,4 +1,5 @@
 #include "../Headers/P_Gerenciador_Processos.h"
+#include "../Headers/RodaInstrucao.h"
 
 void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloqueado *estadobloqueado,PcbTable *pcbTable, Cpu *cpu, Time *time){
   estadoexec->iPcbTable = 0;
@@ -142,10 +143,37 @@ void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo){
       pcbTable->vetor[Aux] = pcbTable->vetor[Aux];
 }
 
+void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
+  strcpy(processo->estado, "EM EXECUCAO");
+
+  RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
+
+  switch (processo->prioridade){
+      case 0:
+          cpu->fatiaTempoUsada += 1; break;
+      case 1:
+          cpu->fatiaTempoUsada += 2; break;
+      case 2:
+          cpu->fatiaTempoUsada += 4; break;
+      case 3:
+          cpu->fatiaTempoUsada += 8; break;
+      default:
+          printf("Erro ao atualizar fatia de tempo CPU!\n");
+  }
+
+  //Atualizando processo simulado
+  processo->Estado_Processo.Inteiro = cpu->valorInteiro;
+  processo->Estado_Processo.Cont = cpu->contadorProgramaAtual;
+  processo->CotaCPU = cpu->fatiaTempoUsada;
+  for (int i = 0; i < processo->Estado_Processo.Tam; i++) {
+      strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
+  }
+  pcbTable->vetor[estadoexec->iPcbTable] = *processo;
+  if(cpu->fatiaTempoUsada >= cpu->fatiaTempo) // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
+      EnfileiraBloqueado(estadobloqueado, processo);
+}
+
 //TODO
-
-void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
-
 void ImprimirCPU(Cpu *cpu);
 void ImprimePronto(EstadoPronto *estadopronto);
 void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
