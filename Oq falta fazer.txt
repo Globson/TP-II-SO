@@ -4,10 +4,4 @@
 
 ->Funções de impressão no P_Impressão.c
 
--> Fazer impressão de filas nos:
-    ImprimirCPU(Cpu *cpu);
-    ImprimePronto(EstadoPronto *estadopronto);
-    ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
-    ImprimePcbTable(PcbTable *pcbTable);
-
 -> Testar kkkk não faço a menor ideia quanto a bugs

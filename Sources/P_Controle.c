@@ -77,7 +77,7 @@ int Executar_P_Controle(){
 
     EnfileiraPronto(&estadopronto, &processo);
 
-    // ImprimePronto(&estadopronto);
+    ImprimePronto(&estadopronto);
 
     InserePcbTable(&pcbTable, processo);
 
@@ -95,9 +95,9 @@ int Executar_P_Controle(){
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
-                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo);
-                // ImprimePcbTable(&pcbTable);
-                // ImprimirCPU(&cpu);
+                //ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); //Comentei por estar incompleto e com bug
+                ImprimePcbTable(&pcbTable);
+                ImprimirCPU(&cpu);
                 break;
             case 'L': // Desbloqueia o primeiro processo simulado na fila bloqueada.
                 desenfileirou = DesenfileiraBloqueado(&estadobloqueado, &processoDesbloqueado);
