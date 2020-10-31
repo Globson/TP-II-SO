@@ -95,7 +95,7 @@ int Executar_P_Controle(){
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
-                //ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); //Comentei por estar incompleto e com bug
+                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); //Comentei por estar incompleto e com bug
                 ImprimePcbTable(&pcbTable);
                 ImprimirCPU(&cpu);
                 break;
