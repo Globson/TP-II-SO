@@ -270,7 +270,7 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
                 pcbtable->vetor[j]->Estado_Processo.Cont = cpu->contadorProgramaAtual;
                 pcbtable->vetor[j]->CotaCPU= cpu->fatiaTempoUsada;
                     if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
-                        EnfileiraBloqueado(estadobloqueado, processo);
+                        EnfileiraBloqueado(estadobloqueado, pcbtable->vetor[j]);
                         if(pcbtable->vetor[j]->prioridade < 3){
                             pcbtable->vetor[j]->prioridade += 1;
                         }
