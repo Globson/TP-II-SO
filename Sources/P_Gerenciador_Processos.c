@@ -246,9 +246,14 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
     for(int i = 0;i < MAXTAM-1;i++){
         RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
         pcbtable->vetor[i] = *processo;
-        strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
-        //atualiza fatia de tempo disponivel
-        switch (processo->prioridade){
+        strcpy(pcbtable->vetor[i]->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
+    }
+    //Escalonador
+    while(prioridade < 3){
+        for(int j = pcbtable->Primeiro;j < pcbtable->Ultimo;j++){
+            //atualiza fatia de tempo disponivel
+            if(pcbtable->vetor[j]->prioridade == prioridade){
+                switch (pcbtable->vetor[i]){
             case 0:
                 cpu->fatiaTempo += 1; break;
             case 1:
@@ -260,19 +265,14 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
             default:
                 printf("Erro ao atualizar fatia de tempo CPU!\n");
         }
-    }
-    //Escalonador
-    while(prioridade < 3){
-        for(int j = pcbtable->Primeiro;j < pcbtable->Ultimo;j++){
-            if(pcbtable->vetor[j]->prioridade == prioridade){
                 strcpy(pcbtable->vetor[j]->estado, "EM EXECUCAO");
                 pcbtable->vetor[j]->Estado_Processo.Inteiro = cpu->valorInteiro;
                 pcbtable->vetor[j]->Estado_Processo.Cont = cpu->contadorProgramaAtual;
                 pcbtable->vetor[j]->CotaCPU= cpu->fatiaTempoUsada;
                     if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
                         EnfileiraBloqueado(estadobloqueado, processo);
-                        if(processo->prioridade < 3){
-                            processo->prioridade += 1;
+                        if(pcbtable->vetor[j]->prioridade < 3){
+                            pcbtable->vetor[j]->prioridade += 1;
                         }
                     }
                 }
