@@ -249,7 +249,7 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
         strcpy(pcbtable->vetor[i]->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
     }
     //Escalonador
-    while(prioridade < 3){
+    while(prioridade < 4){
         for(int j = pcbtable->Primeiro;j < pcbtable->Ultimo;j++){
             //atualiza fatia de tempo disponivel
             if(pcbtable->vetor[j]->prioridade == prioridade){
@@ -271,6 +271,7 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
                 pcbtable->vetor[j]->CotaCPU= cpu->fatiaTempoUsada;
                     if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
                         EnfileiraBloqueado(estadobloqueado, pcbtable->vetor[j]);
+                        //diminui a prioridade do processo; 
                         if(pcbtable->vetor[j]->prioridade < 3){
                             pcbtable->vetor[j]->prioridade += 1;
                         }
