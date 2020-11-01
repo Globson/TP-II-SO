@@ -20,7 +20,8 @@ typedef struct Processo{
 typedef struct Cpu {
   Programa programa;
   int contadorProgramaAtual;
-  int valorInteiro;
+  int *valorInteiro;
+  int Quant_Inteiros;
   int fatiaTempo;
   int fatiaTempoUsada;
 } Cpu;
@@ -60,7 +61,7 @@ void FLVaziaPcbTable(PcbTable *pcbTable);
 int VaziaPcbTable(PcbTable *pcbTable);
 void InserePcbTable(PcbTable *pcbTable, Processo processo);
 void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo);
-//TODO 
+//TODO
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
 void ImprimirCPU(Cpu *cpu);
 void ImprimePronto(EstadoPronto *estadopronto);

@@ -7,6 +7,7 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
   FFVaziaBloqueado(estadobloqueado);
   FLVaziaPcbTable(pcbTable);
   FFilaVazia(&cpu->programa);
+  cpu->Quant_Inteiros =0;
   cpu->fatiaTempoUsada = 0;
   cpu->fatiaTempo = 0;
   cpu->contadorProgramaAtual = 0;
@@ -59,6 +60,7 @@ Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
   cpu->contadorProgramaAtual = processo.Estado_Processo.Cont;
   cpu->fatiaTempo = 10;
   cpu->fatiaTempoUsada = 0;
+  cpu->Quant_Inteiros = processo.Estado_Processo.Quant_Inteiros;
   cpu->valorInteiro = processo.Estado_Processo.Inteiro;
 
   return processo;
@@ -180,7 +182,9 @@ void ImprimirCPU(Cpu *cpu){
           printf("%s", cpu->programa.instrucoes[i]);
       printf("\n");
       printf("Contador de Programa Atual: %d\n", cpu->contadorProgramaAtual);
-      printf("Valor Inteiro: %d\n", cpu->valorInteiro);
+      // for(int i=0;i<cpu->Quant_Inteiros;i++){
+        // printf("Valor Inteiro %d: %d\n", cpu->Quant_Inteiros+1,cpu->valorInteiro[0]);
+      // }
       printf("Fatia de Tempo Disponivel: %d\n", cpu->fatiaTempo);
       printf("Fatia de Tempo Usada: %d\n", cpu->fatiaTempoUsada);
       printf("\n\t--Fim da Lista--\n");
@@ -195,7 +199,10 @@ void ImprimePronto(EstadoPronto *estadopronto){
       printf("Tempo CPU: %d\n", estadopronto->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", estadopronto->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", estadopronto->vetor[Aux].prioridade);
-      printf("Valor Inteiro: %d\n", estadopronto->vetor[Aux].Estado_Processo.Inteiro);
+      printf("VALOR %d",estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros); //Debugando
+      // for(int i=0;i<estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+        // printf("Valor Inteiro %d: %d\n", estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros+1,estadopronto->vetor[Aux].Estado_Processo.Inteiro[i]);
+      // }
       printf("Contador de Programa: %d\n", estadopronto->vetor[Aux].Estado_Processo.Cont);
       printf("Programa: \n");
       for (int i = 0; i < estadopronto->vetor[Aux].Estado_Processo.Tam; i++)
@@ -213,7 +220,9 @@ void ImprimeBloqueado(EstadoBloqueado *estadobloqueado){
       printf("Tempo CPU: %d\n", estadobloqueado->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", estadobloqueado->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", estadobloqueado->vetor[Aux].prioridade);
-      printf("Valor Inteiro: %d\n", estadobloqueado->vetor[Aux].Estado_Processo.Inteiro);
+      // for(int i=0;i<estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+        // printf("Valor Inteiro %d: %d\n", estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros+1,estadobloqueado->vetor[Aux].Estado_Processo.Inteiro[i]);
+      // }
       printf("Contador de Programa: %d\n", estadobloqueado->vetor[Aux].Estado_Processo.Cont);
       printf("Programa: \n");
       for (int i = 0; i < estadobloqueado->vetor[Aux].Estado_Processo.Tam; i++)
@@ -231,7 +240,9 @@ void ImprimePcbTable(PcbTable *pcbTable){
       printf("Tempo CPU: %d\n", pcbTable->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", pcbTable->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", pcbTable->vetor[Aux].prioridade);
-      printf("Valor Inteiro: %d\n", pcbTable->vetor[Aux].Estado_Processo.Inteiro);
+      // for(int i=0;i<pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+        // printf("Valor Inteiro %d: %d\n", pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros+1,pcbTable->vetor[Aux].Estado_Processo.Inteiro[i]);
+      // }
       printf("Contador de Programa: %d\n", pcbTable->vetor[Aux].Estado_Processo.Cont);
       printf("Programa: \n");
       for (int i = 0; i < pcbTable->vetor[Aux].Estado_Processo.Tam; i++)

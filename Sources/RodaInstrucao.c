@@ -2,7 +2,7 @@
 void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcbTable, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
   char comando, instrucao[20];
   FILE *arqPrograma;
-  int n = 0;
+  int n[2],cont=0;
   Processo novoProcesso;
   Programa novoPrograma;
   FFilaVazia(&novoPrograma);
@@ -11,43 +11,60 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
 
   RetiraProgramaFila(&cpu->programa, instrucao);
 
-  char *p = instrucao;
+  /*char *p = instrucao;
   while (*p) { // While there are more characters to process...
       if (isdigit(*p) || ((*p == '-' || *p == '+') && isdigit(*(p + 1)))) {
           // Found a number
-          n = strtol(p, &p, 10); // Read number
-          printf("Inteiro extraido: %d\n", n); // and print it.
+          if(cont==0){
+            n[1] = strtol(p, &p, 10); // Read number
+            cont++;
+          }
+          else{
+            n[2] = strtol(p, &p, 10);
+            cont=0;
+          }
+          printf("Primeiro inteiro extraido: %d\n", n[0]); // and print it.
+          if(cont)
+            printf("Segundo inteiro extraido:%d\n",n[1]);
       } else {
           // Otherwise, move on to the next character.
           p++;
       }
   }
-
+*/
   comando = instrucao[0];
-  printf("\t-----------------Instucao -> %s",instrucao); //Debugando
+  char *p2 = instrucao;
+  n[0]= strtol((p2+2), &p2, 10);
+  p2++;
+  n[1]= strtol((p2+3), &p2, 10);
+  printf("\n\t->>Primeiro parametro: %d",n[0]);
+  printf("\n\t->>Segundo parametro: %d",n[1]);
+  printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
   printf("Comando: %c\n", comando);
 
   switch (comando) {
       case 'N':
+          cpu->Quant_Inteiros = 2; //debugando
+          cpu->valorInteiro = (int*) malloc(sizeof(int)*cpu->Quant_Inteiros);
           break;
       case 'D':
 
           break;
       case 'V':  /* Define o valor da variável inteira para n, onde n é um inteiro. */
-          cpu->valorInteiro = n;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro);
+          cpu->valorInteiro[0] = n[0];
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
       case 'A': /* Adiciona n ao valor da variável inteira, onde n é um inteiro. */
-          cpu->valorInteiro += n;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro);
+          cpu->valorInteiro += n[0];
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
       case 'S': /* Subtrai n do valor da variável inteira, onde n é um inteiro. */
-          cpu->valorInteiro -= n;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro);
+          cpu->valorInteiro -= n[0];
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
