@@ -144,7 +144,7 @@ void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo){
 }
 
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
-  
+
 
   RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
 
@@ -245,17 +245,17 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
     //Coloca os processos que vão entrar em execução na tabela de processos
     for(int i = 0;i < MAXTAM-1;i++){
         RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
-        pcbtable->vetor[i] = *processo;
-        for (int x = 0; x < ppcbtable->vetor[i]->Estado_Processo.Tam; x++) {
-              strcpy(ppcbtable->vetor[i]->Estado_Processo.Programa[x], cpu->programa.instrucoes[x]);
+        pcbTable->vetor[i] = *processo;
+        for (int x = 0; x < pcbTable->vetor[i].Estado_Processo.Tam; x++) {
+              strcpy(pcbTable->vetor[i].Estado_Processo.Programa[x], cpu->programa.instrucoes[x]);
           }
     }
     //Escalonador
     while(prioridade < 4){
-        for(int j = pcbtable->Primeiro;j < pcbtable->Ultimo;j++){
+        for(int j = pcbTable->Primeiro;j < pcbTable->Ultimo;j++){
             //atualiza fatia de tempo disponivel
-            if(pcbtable->vetor[j]->prioridade == prioridade){
-                switch (pcbtable->vetor[i]){
+            if(pcbTable->vetor[j].prioridade == prioridade){
+                switch (pcbTable->vetor[j].prioridade){
             case 0:
                 cpu->fatiaTempo += 1; break;
             case 1:
@@ -267,15 +267,15 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
             default:
                 printf("Erro ao atualizar fatia de tempo CPU!\n");
         }
-                strcpy(pcbtable->vetor[j]->estado, "EM EXECUCAO");
-                pcbtable->vetor[j]->Estado_Processo.Inteiro = cpu->valorInteiro;
-                pcbtable->vetor[j]->Estado_Processo.Cont = cpu->contadorProgramaAtual;
-                pcbtable->vetor[j]->CotaCPU= cpu->fatiaTempoUsada;
+                strcpy(pcbTable->vetor[j].estado, "EM EXECUCAO");
+                pcbTable->vetor[j].Estado_Processo.Inteiro = cpu->valorInteiro;
+                pcbTable->vetor[j].Estado_Processo.Cont = cpu->contadorProgramaAtual;
+                pcbTable->vetor[j].CotaCPU= cpu->fatiaTempoUsada;
                     if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
-                        EnfileiraBloqueado(estadobloqueado, pcbtable->vetor[j]);
-                        //diminui a prioridade do processo; 
-                        if(pcbtable->vetor[j]->prioridade < 3){
-                            pcbtable->vetor[j]->prioridade += 1;
+                        EnfileiraBloqueado(estadobloqueado, &pcbTable->vetor[j]);
+                        //diminui a prioridade do processo;
+                        if(pcbTable->vetor[j].prioridade < 3){
+                            pcbTable->vetor[j].prioridade += 1;
                         }
                     }
                 }
