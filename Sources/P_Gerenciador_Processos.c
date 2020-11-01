@@ -246,7 +246,9 @@ void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, Estad
     for(int i = 0;i < MAXTAM-1;i++){
         RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
         pcbtable->vetor[i] = *processo;
-        strcpy(pcbtable->vetor[i]->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
+        for (int x = 0; x < ppcbtable->vetor[i]->Estado_Processo.Tam; x++) {
+              strcpy(ppcbtable->vetor[i]->Estado_Processo.Programa[x], cpu->programa.instrucoes[x]);
+          }
     }
     //Escalonador
     while(prioridade < 4){
