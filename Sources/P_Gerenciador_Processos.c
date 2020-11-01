@@ -144,7 +144,7 @@ void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo){
 }
 
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
-  strcpy(processo->estado, "EM EXECUCAO");
+  
 
   RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
 
@@ -238,4 +238,43 @@ void ImprimePcbTable(PcbTable *pcbTable){
           printf("%s", pcbTable->vetor[Aux].Estado_Processo.Programa[i]);
       printf("\n\t--Fim da Lista--\n");
   }
+}
+void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
+    int prioridade = 0;
+    for(int i = 0;i < MAXTAM;i++){
+        RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
+        pcbtable->vetor[i] = *processo;
+        strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
+        //atualiza fatia de tempo disponivel
+        switch (processo->prioridade){
+            case 0:
+                cpu->fatiaTempo += 1; break;
+            case 1:
+                cpu->fatiaTempo += 2; break;
+            case 2:
+                cpu->fatiaTempo += 4; break;
+            case 3:
+                cpu->fatiaTempo += 8; break;
+            default:
+                printf("Erro ao atualizar fatia de tempo CPU!\n");
+        }
+    }
+    //Escalonador
+    while(prioridade < 3){
+        for(int j = pcbtable->Primeiro;j < pcbtable->Ultimo;j++){
+            if(pcbtable->vetor[j]->prioridade == prioridade){
+                strcpy(pcbtable->vetor[j]->estado, "EM EXECUCAO");
+                pcbtable->vetor[j]->Estado_Processo.Inteiro = cpu->valorInteiro;
+                pcbtable->vetor[j]->Estado_Processo.Cont = cpu->contadorProgramaAtual;
+                pcbtable->vetor[j]->CotaCPU= cpu->fatiaTempoUsada;
+                    if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
+                        EnfileiraBloqueado(estadobloqueado, processo);
+                        if(processo->prioridade < 3){
+                            processo->prioridade += 1;
+                        }
+                    }
+                }
+            }
+        prioridade++;
+    }
 }
