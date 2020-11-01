@@ -241,7 +241,9 @@ void ImprimePcbTable(PcbTable *pcbTable){
 }
 void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
     int prioridade = 0;
-    for(int i = 0;i < MAXTAM;i++){
+    //Modificar esse for depois, para somente colocar número de processos necessarios, e não MAXTAM.
+    //Coloca os processos que vão entrar em execução na tabela de processos
+    for(int i = 0;i < MAXTAM-1;i++){
         RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
         pcbtable->vetor[i] = *processo;
         strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
