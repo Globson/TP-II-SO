@@ -50,6 +50,7 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai);
 Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instrucao);
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
+Processo ColocaOutroProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
 void FFVaziaPronto(EstadoPronto *estadopronto);
 void FFVaziaBloqueado(EstadoBloqueado *estadobloqueado);
 int VaziaPronto(EstadoPronto *estadopronto);

@@ -53,7 +53,7 @@ Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instru
   return processo;
 }
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
-  printf("\n\t\t\tChamou coloca processo");
+  // printf("\n\t\t\tChamou coloca processo");
   Processo processo;
 
   DesenfileiraPronto(estadopronto, &processo);
@@ -74,7 +74,27 @@ Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
 
   return processo;
 }
+Processo ColocaOutroProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
+  Processo processo;
 
+  DesenfileiraPronto(estadopronto, &processo);
+
+  cpu->programa.Tam = processo.Estado_Processo.Tam;
+
+  FFilaVazia(&cpu->programa);
+  for (int i = 0; i < cpu->programa.Tam; i++) {
+      AdicionaProgramaFila(&cpu->programa, processo.Estado_Processo.Programa[i]);
+  }
+  //troca de contexto
+  cpu->contadorProgramaAtual = processo.Estado_Processo.Cont;
+  cpu->fatiaTempo = 10;
+  cpu->fatiaTempoUsada = 0;
+  cpu->Quant_Inteiros = processo.Estado_Processo.Quant_Inteiros;
+  cpu->valorInteiro = processo.Estado_Processo.Inteiro;
+  cpu->Alocado_V_inteiros = processo.Estado_Processo.Alocado_V_inteiros;
+
+  return processo;
+}
 void FFVaziaPronto(EstadoPronto *estadopronto){
   estadopronto->Frente = 0;
   estadopronto->Tras = estadopronto->Frente;
@@ -114,7 +134,6 @@ int DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo){
       printf("\nErro! Fila ProcessosPronto esta vazia!\n");
       return 0;}
   else {
-      printf("@@@@----- %d %d ",estadopronto->Frente,estadopronto->vetor[estadopronto->Frente].Estado_Processo.Tam);
       *processo = estadopronto->vetor[estadopronto->Frente];
       estadopronto->Frente = estadopronto->Frente % MAXTAM + 1;
       return 1;
@@ -176,8 +195,6 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
   }
 
   //Atualizando processo simulado
-  //processo->Estado_Processo.Inteiro = cpu->valorInteiro;
-  //ImprimirCPU(cpu);
   processo->Estado_Processo.Cont = cpu->contadorProgramaAtual;
   processo->CotaCPU = cpu->fatiaTempoUsada;
   processo->Estado_Processo.Alocado_V_inteiros = cpu->Alocado_V_inteiros;
@@ -190,17 +207,15 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
   if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
       EnfileiraBloqueado(estadobloqueado, processo);
-      //ImprimePronto(estadopronto);
-      // ImprimeBloqueado(estadobloqueado);
+      ImprimePronto(estadopronto);
+      ImprimeBloqueado(estadobloqueado);
       // ImprimePcbTable(pcbTable);
-      //DesenfileiraPronto(estadopronto,processo);
-
-      //*processo = colocarProcessoCPU(cpu,estadopronto); //Ja que o processo atual foi bloqueado, colocaremos outro na CPU
+      *processo = ColocaOutroProcessoCPU(cpu,estadopronto);//Ja que o processo atual foi bloqueado, colocaremos outro na CPU
     }
-  else if(!strcmp(processo->estado,"BLOQUEADO")){
-    printf("->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Entrei!");
-    *processo = colocarProcessoCPU(cpu,estadopronto);
-  }
+  // else if(!strcmp(processo->estado,"BLOQUEADO")){
+  //   printf("->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Entrei!");
+  //   *processo = colocarProcessoCPU(cpu,estadopronto);
+  // }
 }
 
 void ImprimirCPU(Cpu *cpu){

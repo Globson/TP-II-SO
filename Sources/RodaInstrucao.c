@@ -30,9 +30,9 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
             i++;
           }
           n1 = atoi(aux2);
-          printf("Valor 1: %d\n", n1);
+          // printf("Valor 1: %d\n", n1);
           cpu->Quant_Inteiros = n1;
-          printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
+          // printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
@@ -45,15 +45,15 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
             i++;
           }
           n1 = atoi(aux2);
-          printf("Valor 1: %d\n", n1);
+          // printf("Valor 1: %d\n", n1);
           if(cpu->Alocado_V_inteiros == 0){
-            printf("\nENTROU em nao alocado");
+            // printf("\nENTROU em nao alocado");
             cpu->valorInteiro = (int*) malloc(sizeof(int)*cpu->Quant_Inteiros);
             cpu->valorInteiro[n1]=0;
             cpu->Alocado_V_inteiros =1; //Foi alocado, porem apenas posição especificada foi inicializada com 0;
           }
           else{
-            printf("\nENTROU alocado");
+            // printf("\nENTROU alocado");
             cpu->valorInteiro[n1]=0; //Caso ja encontre alocado,basta inicializar tal posicao.
           }
           cpu->contadorProgramaAtual++;
@@ -71,10 +71,10 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           n2 = atoi(aux3);
-          printf("Valor 1: %d\n", n1);
-          printf("Valor 2: %d\n", n2);
+          // printf("Valor 1: %d\n", n1);
+          // printf("Valor 2: %d\n", n2);
           cpu->valorInteiro[n1] = n2;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
+          // printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
@@ -90,10 +90,10 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           n2 = atoi(aux3);
-          printf("Valor 1: %d\n", n1);
-          printf("Valor 2:%d\n", n2);
+          // printf("Valor 1: %d\n", n1);
+          // printf("Valor 2:%d\n", n2);
           cpu->valorInteiro[n1] += n2;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
+          // printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
@@ -109,10 +109,10 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           n2 = atoi(aux3);
-          printf("Valor 1: %d\n", n1);
-          printf("Valor 2:%d\n", n2);
+          // printf("Valor 1: %d\n", n1);
+          // printf("Valor 2:%d\n", n2);
           cpu->valorInteiro[n1] -= n2;
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
+          // printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
@@ -121,11 +121,11 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           EnfileiraBloqueado(estadobloqueado, processo);
           cpu->contadorProgramaAtual++;
           time->time++;
-          //colocarProcessoCPU(cpu, estadopronto);
+          *processo = ColocaOutroProcessoCPU(cpu, estadopronto);
           break;
       case 'T': /* Termina esse processo simulado. */
           RetiraPcbTable(pcbTable, estadoexec->iPcbTable, processo); // Precisa desalocar o programa.
-          *processo = colocarProcessoCPU(cpu, estadopronto);
+          *processo = ColocaOutroProcessoCPU(cpu, estadopronto);
           time->time++;
           break;
       case 'F': /* Cria um novo processo simulado continuando da instrucao N. */
@@ -137,7 +137,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
             i++;
           }
           n1 = atoi(aux2);
-          printf("Valor 1: %d\n", n1);
+          // printf("Valor 1: %d\n", n1);
           novoProcesso = criarProcessoSimulado(time, processo, n1);
            if(processo->Estado_Processo.Alocado_V_inteiros!=0)
               for(int k=0; k<processo->Estado_Processo.Quant_Inteiros;k++){

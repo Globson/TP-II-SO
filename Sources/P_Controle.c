@@ -90,7 +90,7 @@ int Executar_P_Controle(){
 
 
     processo = colocarProcessoCPU(&cpu, &estadopronto);
-    for (unsigned int j = 0; j < strlen(str_recebida); j+=2) {
+    for (unsigned int j = 0; j < strlen(str_recebida); j++) {
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
@@ -112,7 +112,7 @@ int Executar_P_Controle(){
                 //TODO
                 break;
             default:
-                printf("Comando '%c' não aceito!\n", str_recebida[j]);
+                // printf("Comando '%c' não aceito!\n", str_recebida[j]);
                 break;
         }
     }
