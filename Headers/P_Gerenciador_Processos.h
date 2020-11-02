@@ -4,7 +4,8 @@
 
 
 typedef struct Time{
-  int time;
+  int time; //tempo de Cpu
+  int QuantProcessosCriados; //Quantidade de processos criados ao todo.
 }Time;
 
 typedef struct Processo{

@@ -14,9 +14,11 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
   cpu->contadorProgramaAtual = 0;
   cpu->valorInteiro = 0;
   time->time = 0;
+  time->QuantProcessosCriados = 0;
 }
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai){
   Processo processo;
+  time->QuantProcessosCriados++;
   processo.pid = rand()%10000;
   processo.pid_do_pai = pid_Pai;
   processo.prioridade = 0; // Necessário mexer
@@ -35,6 +37,7 @@ Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instruc
 }
 Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instrucao){
   Processo processo;
+  time->QuantProcessosCriados++;
   processo.pid = rand()%10000; //Acredito que forma de setar novo pid esteja errado.
   processo.pid_do_pai = processoPai->pid;
   processo.prioridade = processoPai->prioridade;

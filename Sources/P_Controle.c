@@ -106,8 +106,8 @@ int Executar_P_Controle(){
                 ImprimeSistemaCompleto(&cpu,&pcbTable,&estadobloqueado,&estadopronto);
                 break;
             case 'M': // Imprime o tempo médio do ciclo e finaliza o sistema.
-                //TODO
-                //exit(0);
+                ImprimeTempoMedioCiclo(&time);
+                exit(0);
                 break;
             default:
                 // printf("Comando '%c' não aceito!\n", str_recebida[j]);
