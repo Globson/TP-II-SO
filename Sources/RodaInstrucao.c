@@ -16,10 +16,10 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
   printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
 
 
-  int i = 0,n1,n2;
+  int i = 0,n1=0,n2=0;
   const char s[2] = " ";
   char *token;
-  char *aux2,*aux3;
+  char *aux2,*aux3,ArquivoNovo[20]="", Path[40] = "./Arquivos_Entrada/";
   switch (comando) {
       case 'N':
           token = strtok(instrucao, s);
@@ -69,7 +69,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           n1 = atoi(aux2);
           n2 = atoi(aux3);
           printf("Valor 1: %d\n", n1);
-          printf("Valor 2:%d\n", n2);
+          printf("Valor 2: %d\n", n2);
           cpu->valorInteiro[n1] = n2;
           printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
@@ -125,7 +125,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           colocarProcessoCPU(cpu, estadopronto);
           time->time++;
           break;
-      case 'F': /* Cria um novo processo simulado. */
+      case 'F': /* Cria um novo processo simulado continuando da instrucao N. */
           token = strtok(instrucao, s);
           while( token != NULL ) {
             if(i == 1)
@@ -135,15 +135,22 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           printf("Valor 1: %d\n", n1);
-          novoProcesso = criarProcessoSimulado(time, processo);
+          novoProcesso = criarProcessoSimulado(time, processo, n1);
           EnfileiraPronto(estadopronto, &novoProcesso);
           InserePcbTable(pcbTable, novoProcesso);
           cpu->contadorProgramaAtual++; // Necessário para atualizar o contador do processo pai para a instrução logo após a instrução F.
           time->time++;
           break;
       case 'R': /* Substitui o programa do processo simulado pelo programa no arquivo nome_do_arquivo e define o contador de programa para a primeira instrução desse novo programa. */
-          arqPrograma = fopen("./Arquivos_Entrada/Programa.txt", "r");
-
+          for(unsigned int j=2;j<strlen(instrucao);j++){   //Instrução R ainda com muitos bugs, nao consigo achar Path usando string. TODO
+            ArquivoNovo[j-2]=instrucao[j];
+          }
+          strcat(Path,ArquivoNovo);
+          Path[33]='\0';
+          //printf("Nome arquivo novo: %s  %lu",Path,strlen(instrucao));
+          printf("\nEntre com o nome do arquivo:");
+          scanf("%s",Path);
+          arqPrograma = fopen(Path, "r");
           if (arqPrograma == NULL) {
               printf("Erro, nao foi possivel abrir o arquivo ArquivoPrograma.txt\n");
           } else {
@@ -153,14 +160,12 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
                   Quant_Instrucoes++;
               }
               novoPrograma.Tam = Quant_Instrucoes;
+              fclose(arqPrograma);
           }
 
-          fclose(arqPrograma);
-
           cpu->contadorProgramaAtual = 0;
-          cpu->valorInteiro = 0; // Indefinido?????
+          cpu->valorInteiro = NULL;
           time->time++;
-
           break;
       default:
           printf("Comando não suportado!\n");

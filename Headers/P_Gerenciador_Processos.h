@@ -48,7 +48,7 @@ typedef struct PcbTable { //é um array com uma entrada para cada processo simul
 
 void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloqueado *estadobloqueado,PcbTable *pcbTable, Cpu *cpu, Time *time);
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai);
-Processo criarProcessoSimulado(Time *time, Processo *processoPai);
+Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instrucao);
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto);
 void FFVaziaPronto(EstadoPronto *estadopronto);
 void FFVaziaBloqueado(EstadoBloqueado *estadobloqueado);

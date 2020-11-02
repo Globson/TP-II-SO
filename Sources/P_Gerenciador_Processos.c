@@ -33,15 +33,15 @@ Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instruc
   strcpy(processo.estado, "PRONTO");
   return processo;
 }
-Processo criarProcessoSimulado(Time *time, Processo *processoPai){
+Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instrucao){
   Processo processo;
-  processo.pid = processoPai->pid + 1; //Acredito que forma de setar novo pid esteja errado.
+  processo.pid = rand()%10000; //Acredito que forma de setar novo pid esteja errado.
   processo.pid_do_pai = processoPai->pid;
   processo.prioridade = processoPai->prioridade;
   processo.CotaCPU = 0;
   processo.startupTime = time->time;
   processo.Estado_Processo.Inteiro = processoPai->Estado_Processo.Inteiro;
-  processo.Estado_Processo.Cont = processoPai->Estado_Processo.Cont + 1;  //Modificar
+  processo.Estado_Processo.Cont = Num_instrucao;
   processo.Estado_Processo.Tam = processoPai->Estado_Processo.Tam;
   processo.Estado_Processo.Alocado_V_inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
   processo.Estado_Processo.Quant_Inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
@@ -177,8 +177,9 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
       strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
   }
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
-  if(cpu->fatiaTempoUsada >= cpu->fatiaTempo) // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
+  if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
       EnfileiraBloqueado(estadobloqueado, processo);
+      DesenfileiraPronto(estadopronto,processo);}
 }
 
 void ImprimirCPU(Cpu *cpu){

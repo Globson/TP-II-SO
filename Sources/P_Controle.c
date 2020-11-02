@@ -65,11 +65,11 @@ int Executar_P_Controle(){
                 AdicionaProgramaFila(&Prog, Instrucao);
                 Quant_Instrucoes++;
               }
+      fclose(ArquivoPrograma);
     }
 
     // printf("Quantidade de Instruções: %d\n", Quant_Instrucoes);
 
-    fclose(ArquivoPrograma);
 
     Prog.Tam = Quant_Instrucoes;
 
@@ -88,8 +88,8 @@ int Executar_P_Controle(){
 
     printf("String LIDA pelo MANAGER de PID %i recebida pelo COMMANDER: '%s'\n\n", getpid(), str_recebida);
 
-    processo = colocarProcessoCPU(&cpu, &estadopronto);
 
+    processo = colocarProcessoCPU(&cpu, &estadopronto);
     for (unsigned int j = 0; j < strlen(str_recebida); j+=2) {
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
@@ -100,8 +100,10 @@ int Executar_P_Controle(){
                 break;
             case 'L': // Desbloqueia o primeiro processo simulado na fila bloqueada.
                 desenfileirou = DesenfileiraBloqueado(&estadobloqueado, &processoDesbloqueado);
-                if(desenfileirou)
-                    EnfileiraPronto(&estadopronto, &processoDesbloqueado);
+                if(desenfileirou){
+                  EnfileiraPronto(&estadopronto, &processoDesbloqueado);
+                  // processo = colocarProcessoCPU(&cpu, &estadopronto);
+                }
                 break;
             case 'I': // Imprime o estado atual do sistema.
                 //TODO chamar funções imprime
@@ -134,8 +136,8 @@ int LerArquivo(char *str_enviada){ //Simplifiquei algumas coisas
         strcat(str_enviada,str);
         strcat(str_enviada," ");
       }
+      fclose(ArquivoControle);
     }
-    fclose(ArquivoControle);
     return 1;
 }
 
