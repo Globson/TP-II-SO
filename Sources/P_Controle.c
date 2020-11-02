@@ -176,13 +176,13 @@ int RetiraProgramaFila(Programa *prog,char *instrucao,int indice){
     prog->Frente = prog->Frente % MAXTAM +1;
   }
   */
-  printf("\n---Indice da fila de instrucoes: %d---",indice);
+  //printf("\n---Indice da fila de instrucoes: %d---",indice);
   if(EstaVazia(*prog)){
     printf("\n\tErro! Fila de programa Vazia!\n");
     return -1;
   }
   else if (indice >= prog->Tras) {
-      printf("\n\tErro! Posicao nao existe na fila de Instrucoes deste processo! Indice de tras: %d \n",prog->Tras);
+      // printf("\n\tErro! Posicao nao existe na fila de Instrucoes deste processo! Indice de tras: %d \n",prog->Tras);
       return 0;
   }
   strcpy(instrucao,prog->instrucoes[indice]);
