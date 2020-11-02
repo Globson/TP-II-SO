@@ -12,7 +12,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
   comando = instrucao[0];
 
 
-  printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
+  printf("\t\n------PID: %d ---------Instucao -> %s",pcbTable->vetor[estadoexec->iPcbTable].pid,instrucao); //Debugando
 
 
   int i = 0,j=2,n1=0,n2=0;
@@ -125,7 +125,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           break;
       case 'T': /* Termina esse processo simulado. */
           RetiraPcbTable(pcbTable, estadoexec->iPcbTable, processo); // Precisa desalocar o programa.
-          colocarProcessoCPU(cpu, estadopronto);
+          *processo = colocarProcessoCPU(cpu, estadopronto);
           time->time++;
           break;
       case 'F': /* Cria um novo processo simulado continuando da instrucao N. */

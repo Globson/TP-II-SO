@@ -3,3 +3,26 @@
 ->Funções de impressão no P_Impressão.c e acabar de arrumar impressão em outras filas
 
 -> Testar kkkk não faço a menor ideia quanto a bugs
+
+
+int colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto, Processo *processo){
+  int verifica = DesenfileiraPronto(estadopronto, processo);
+  if(verifica){
+    cpu->programa.Tam = 10;// processo->Estado_Processo.Tam;
+
+    for (int i = 0; i < cpu->programa.Tam; i++) {
+      printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%d",cpu->programa.Tam);
+      AdicionaProgramaFila(&cpu->programa, processo->Estado_Processo.Programa[i]);
+    }
+    //troca de contexto
+    cpu->contadorProgramaAtual = processo->Estado_Processo.Cont;
+    cpu->fatiaTempo = 10;
+    cpu->fatiaTempoUsada = 0;
+    cpu->Quant_Inteiros = processo->Estado_Processo.Quant_Inteiros;
+    cpu->valorInteiro = processo->Estado_Processo.Inteiro;
+    cpu->Alocado_V_inteiros = processo->Estado_Processo.Alocado_V_inteiros;
+    return 1;
+  }
+  else
+    return 0;
+}

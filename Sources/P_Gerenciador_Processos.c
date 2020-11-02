@@ -17,9 +17,9 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
 }
 Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instrucoes, int pid_Pai){
   Processo processo;
-  processo.pid = 0;
+  processo.pid = rand()%10000;
   processo.pid_do_pai = pid_Pai;
-  processo.prioridade = 0;
+  processo.prioridade = 0; // Necessário mexer
   processo.CotaCPU = 0;
   processo.startupTime = time->time;
   processo.Estado_Processo.Inteiro = 0;
@@ -53,6 +53,7 @@ Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instru
   return processo;
 }
 Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
+  printf("\n\t\t\tChamou coloca processo");
   Processo processo;
 
   DesenfileiraPronto(estadopronto, &processo);
@@ -90,7 +91,7 @@ int VaziaBloqueado(EstadoBloqueado *estadobloqueado){
 }
 void EnfileiraPronto(EstadoPronto *estadopronto, Processo *processo){
   if (estadopronto->Tras % MAXTAM + 1 == estadopronto->Frente)
-      printf("Erro fila Ready esta cheia\n");
+      printf("Erro! Fila ProcessosPronto esta cheia!\n");
   else {
       strcpy(processo->estado, "PRONTO");
       estadopronto->vetor[estadopronto->Tras] = *processo;
@@ -100,7 +101,7 @@ void EnfileiraPronto(EstadoPronto *estadopronto, Processo *processo){
 }
 void EnfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo){
   if (estadobloqueado->Tras % MAXTAM + 1 == estadobloqueado->Frente)
-      printf("\nErro fila Blocked esta  cheia!\n");
+      printf("\nErro! Fila ProcessosBloqueados esta cheia!\n");
   else {
       strcpy(processo->estado, "BLOQUEADO");
       estadobloqueado->vetor[estadobloqueado->Tras] = *processo;
@@ -108,17 +109,20 @@ void EnfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo){
       estadobloqueado->Tras = estadobloqueado->Tras % MAXTAM + 1;
   }
 }
-void DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo){
-  if (VaziaPronto(estadopronto))
-      printf("\nErro fila Ready esta vazia\n");
+int DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo){
+  if (VaziaPronto(estadopronto)){
+      printf("\nErro! Fila ProcessosPronto esta vazia!\n");
+      return 0;}
   else {
+      printf("@@@@----- %d %d ",estadopronto->Frente,estadopronto->vetor[estadopronto->Frente].Estado_Processo.Tam);
       *processo = estadopronto->vetor[estadopronto->Frente];
       estadopronto->Frente = estadopronto->Frente % MAXTAM + 1;
+      return 1;
   }
 }
 int DesenfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo){
   if (VaziaBloqueado(estadobloqueado)){
-      printf("\nErro fila Blocked esta vazia\n");
+      printf("\nErro! Fila ProcessosBloqueados esta vazia!\n");
       return 0;
   }
   else {
@@ -173,6 +177,7 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
 
   //Atualizando processo simulado
   //processo->Estado_Processo.Inteiro = cpu->valorInteiro;
+  //ImprimirCPU(cpu);
   processo->Estado_Processo.Cont = cpu->contadorProgramaAtual;
   processo->CotaCPU = cpu->fatiaTempoUsada;
   processo->Estado_Processo.Alocado_V_inteiros = cpu->Alocado_V_inteiros;
@@ -180,33 +185,45 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
   for (int i = 0; i < processo->Estado_Processo.Tam; i++) {
       strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
   }
+  if(cpu->Alocado_V_inteiros)
+      processo->Estado_Processo.Inteiro=cpu->valorInteiro;
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
   if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
       EnfileiraBloqueado(estadobloqueado, processo);
-      ImprimePronto(estadopronto);
+      //ImprimePronto(estadopronto);
+      // ImprimeBloqueado(estadobloqueado);
+      // ImprimePcbTable(pcbTable);
       //DesenfileiraPronto(estadopronto,processo);
-      //colocarProcessoCPU(cpu,estadopronto); //Ja que o processo atual foi bloqueado, colocaremos outro na CPU
+
+      //*processo = colocarProcessoCPU(cpu,estadopronto); //Ja que o processo atual foi bloqueado, colocaremos outro na CPU
     }
+  else if(!strcmp(processo->estado,"BLOQUEADO")){
+    printf("->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Entrei!");
+    *processo = colocarProcessoCPU(cpu,estadopronto);
+  }
 }
 
 void ImprimirCPU(Cpu *cpu){
       printf("\n\tInformacoes da CPU: \n");
       printf("\nPrograma na CPU: \n");
       for (int i = 0; i < cpu->programa.Tam; i++)
-          printf("%s", cpu->programa.instrucoes[i]);
+          printf("\t%s", cpu->programa.instrucoes[i]);
       printf("\n");
       printf("Contador de Programa Atual: %d\n", cpu->contadorProgramaAtual);
-      // for(int i=0;i<cpu->Quant_Inteiros;i++){
-        // printf("Valor Inteiro %d: %d\n", cpu->Quant_Inteiros+1,cpu->valorInteiro[0]);
-      // }
+      printf("Quantidade de variaveis: %d\n",cpu->Quant_Inteiros);
+      if(cpu->Alocado_V_inteiros)
+        for(int i=0;i<cpu->Quant_Inteiros;i++){
+          printf("Valor inteiro da variavel ( %d ): %d\n", i,cpu->valorInteiro[i]);
+        }
       printf("Fatia de Tempo Disponivel: %d\n", cpu->fatiaTempo);
       printf("Fatia de Tempo Usada: %d\n", cpu->fatiaTempoUsada);
-      printf("\n\t--Fim da Lista--\n");
+      printf("\n\t--Fim das informacoes na CPU--\n");
 }
 void ImprimePronto(EstadoPronto *estadopronto){
   int Aux;
   printf("\n\tFila de Processsos Prontos:\n");
   for (Aux = estadopronto->Frente; Aux <= (estadopronto->Tras - 1); Aux++){
+      printf("----------------- Processo %d -----------------\n",Aux );
       printf("PID: %i\n", estadopronto->vetor[Aux].pid);
       printf("PID Pai: %i\n", estadopronto->vetor[Aux].pid_do_pai);
       printf("Estado: %s\n", estadopronto->vetor[Aux].estado);
@@ -219,51 +236,60 @@ void ImprimePronto(EstadoPronto *estadopronto){
             printf("Valor inteiro da variavel ( %d ): %d\n", i,estadopronto->vetor[Aux].Estado_Processo.Inteiro[i]);
         }
       printf("Contador de Programa: %d\n", estadopronto->vetor[Aux].Estado_Processo.Cont);
-      printf("Programa: \n");
+      printf("Programa do Processo: \n");
       for (int i = 0; i < estadopronto->vetor[Aux].Estado_Processo.Tam; i++)
-          printf("%s", estadopronto->vetor[Aux].Estado_Processo.Programa[i]);
-      printf("\n\t--Fim da Lista--\n");
+          printf("\t%s", estadopronto->vetor[Aux].Estado_Processo.Programa[i]);
+      printf("----------------------------------------------\n");
   }
+  printf("\n\t--Fim da Lista de Processos Prontos--\n");
 }
 void ImprimeBloqueado(EstadoBloqueado *estadobloqueado){
   int Aux;
   printf("\n\tFila de Processsos Bloqueados:\n");
   for (Aux = estadobloqueado->Frente; Aux <= (estadobloqueado->Tras - 1); Aux++){
+      printf("----------------- Processo %d -----------------\n",Aux );
       printf("PID: %i\n", estadobloqueado->vetor[Aux].pid);
       printf("PID Pai: %i\n", estadobloqueado->vetor[Aux].pid_do_pai);
       printf("Estado: %s\n", estadobloqueado->vetor[Aux].estado);
       printf("Tempo CPU: %d\n", estadobloqueado->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", estadobloqueado->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", estadobloqueado->vetor[Aux].prioridade);
-      // for(int i=0;i<estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
-        // printf("Valor Inteiro %d: %d\n", estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros+1,estadobloqueado->vetor[Aux].Estado_Processo.Inteiro[i]);
-      // }
+      printf("Quantidade de variaveis: %d\n",estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros); //Debugando
+      if(estadobloqueado->vetor[Aux].Estado_Processo.Alocado_V_inteiros)
+        for(int i=0;i<estadobloqueado->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+            printf("Valor inteiro da variavel ( %d ): %d\n", i,estadobloqueado->vetor[Aux].Estado_Processo.Inteiro[i]);
+          }
       printf("Contador de Programa: %d\n", estadobloqueado->vetor[Aux].Estado_Processo.Cont);
-      printf("Programa: \n");
+      printf("Programa do Processo: \n");
       for (int i = 0; i < estadobloqueado->vetor[Aux].Estado_Processo.Tam; i++)
-          printf("%s", estadobloqueado->vetor[Aux].Estado_Processo.Programa[i]);
-      printf("\n\t--Fim da Lista--\n");
+          printf("\t%s", estadobloqueado->vetor[Aux].Estado_Processo.Programa[i]);
+      printf("----------------------------------------------\n");
   }
+  printf("\n\t--Fim da Lista de Processos Bloqueados--\n");
 }
 void ImprimePcbTable(PcbTable *pcbTable){
   int Aux;
   printf("\n\tLista de Processos na Tabela:\n");
   for (Aux = pcbTable->Primeiro; Aux <= (pcbTable->Ultimo - 1); Aux++) {
+      printf("----------------- Processo %d -----------------\n",Aux );
       printf("PID: %i\n", pcbTable->vetor[Aux].pid);
       printf("PID Pai: %i\n", pcbTable->vetor[Aux].pid_do_pai);
       printf("Estado: %s\n", pcbTable->vetor[Aux].estado);
       printf("Tempo CPU: %d\n", pcbTable->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", pcbTable->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", pcbTable->vetor[Aux].prioridade);
-      // for(int i=0;i<pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
-        // printf("Valor Inteiro %d: %d\n", pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros+1,pcbTable->vetor[Aux].Estado_Processo.Inteiro[i]);
-      // }
+      printf("Quantidade de variaveis: %d\n",pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros); //Debugando
+      if(pcbTable->vetor[Aux].Estado_Processo.Alocado_V_inteiros)
+        for(int i=0;i<pcbTable->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+            printf("Valor inteiro da variavel ( %d ): %d\n", i,pcbTable->vetor[Aux].Estado_Processo.Inteiro[i]);
+        }
       printf("Contador de Programa: %d\n", pcbTable->vetor[Aux].Estado_Processo.Cont);
-      printf("Programa: \n");
+      printf("Programa do Processo: \n");
       for (int i = 0; i < pcbTable->vetor[Aux].Estado_Processo.Tam; i++)
-          printf("%s", pcbTable->vetor[Aux].Estado_Processo.Programa[i]);
-      printf("\n\t--Fim da Lista--\n");
+          printf("\t%s", pcbTable->vetor[Aux].Estado_Processo.Programa[i]);
+      printf("----------------------------------------------\n");
   }
+  printf("\n\t--Fim da Lista de Processos na Tabela--\n");
 }
 void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
     int prioridade = 0;

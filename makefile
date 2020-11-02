@@ -3,3 +3,6 @@ all: main.c ./Sources/P_Controle.c ./Sources/P_Gerenciador_Processos.c ./Sources
 
 clear: EXEC
 	rm EXEC
+
+run: EXEC
+	./EXEC

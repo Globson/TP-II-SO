@@ -56,7 +56,7 @@ int VaziaPronto(EstadoPronto *estadopronto);
 int VaziaBloqueado(EstadoBloqueado *estadobloqueado);
 void EnfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
 void EnfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
-void DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
+int DesenfileiraPronto(EstadoPronto *estadopronto, Processo *processo);
 int DesenfileiraBloqueado(EstadoBloqueado *estadobloqueado, Processo *processo);
 void FLVaziaPcbTable(PcbTable *pcbTable);
 int VaziaPcbTable(PcbTable *pcbTable);

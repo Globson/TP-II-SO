@@ -116,6 +116,8 @@ int Executar_P_Controle(){
                 break;
         }
     }
+    //ImprimeBloqueado(&estadobloqueado);
+    ImprimePcbTable(&pcbTable);
 
 
             //exit(0);
