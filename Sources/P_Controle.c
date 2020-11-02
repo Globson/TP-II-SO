@@ -67,17 +67,16 @@ int Executar_P_Controle(){
               }
     }
 
-    printf("Quantidade de Instruções: %d\n", Quant_Instrucoes);
+    // printf("Quantidade de Instruções: %d\n", Quant_Instrucoes);
 
     fclose(ArquivoPrograma);
 
     Prog.Tam = Quant_Instrucoes;
 
     Processo processo = criarPrimeiroSimulado(&Prog, &time, Quant_Instrucoes, getpid());
-
     EnfileiraPronto(&estadopronto, &processo);
 
-    ImprimePronto(&estadopronto);
+    // ImprimePronto(&estadopronto);
 
     InserePcbTable(&pcbTable, processo);
 
@@ -96,8 +95,8 @@ int Executar_P_Controle(){
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
                 ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); //Comentei por estar incompleto e com bug
-                ImprimePcbTable(&pcbTable);
-                ImprimirCPU(&cpu);
+                // ImprimePcbTable(&pcbTable);
+                // ImprimirCPU(&cpu);
                 break;
             case 'L': // Desbloqueia o primeiro processo simulado na fila bloqueada.
                 desenfileirou = DesenfileiraBloqueado(&estadobloqueado, &processoDesbloqueado);

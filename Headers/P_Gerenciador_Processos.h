@@ -21,6 +21,7 @@ typedef struct Cpu {
   Programa programa;
   int contadorProgramaAtual;
   int *valorInteiro;
+  int Alocado_V_inteiros;
   int Quant_Inteiros;
   int fatiaTempo;
   int fatiaTempoUsada;

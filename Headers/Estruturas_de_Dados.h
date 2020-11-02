@@ -22,6 +22,7 @@ typedef struct Programa{
 
 typedef struct EstadoProcesso{
   int Quant_Inteiros;
+  int Alocado_V_inteiros;
   int *Inteiro;
   int Cont;
   int Tam;

@@ -2,7 +2,6 @@
 void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcbTable, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
   char comando, instrucao[20];
   FILE *arqPrograma;
-  int n[2],cont=0;
   Processo novoProcesso;
   Programa novoPrograma;
   FFilaVazia(&novoPrograma);
@@ -11,60 +10,106 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
 
   RetiraProgramaFila(&cpu->programa, instrucao);
 
-  /*char *p = instrucao;
-  while (*p) { // While there are more characters to process...
-      if (isdigit(*p) || ((*p == '-' || *p == '+') && isdigit(*(p + 1)))) {
-          // Found a number
-          if(cont==0){
-            n[1] = strtol(p, &p, 10); // Read number
-            cont++;
-          }
-          else{
-            n[2] = strtol(p, &p, 10);
-            cont=0;
-          }
-          printf("Primeiro inteiro extraido: %d\n", n[0]); // and print it.
-          if(cont)
-            printf("Segundo inteiro extraido:%d\n",n[1]);
-      } else {
-          // Otherwise, move on to the next character.
-          p++;
-      }
-  }
-*/
   comando = instrucao[0];
-  char *p2 = instrucao;
-  n[0]= strtol((p2+2), &p2, 10);
-  p2++;
-  n[1]= strtol((p2+3), &p2, 10);
-  printf("\n\t->>Primeiro parametro: %d",n[0]);
-  printf("\n\t->>Segundo parametro: %d",n[1]);
-  printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
-  printf("Comando: %c\n", comando);
 
+
+  printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
+
+
+  int i = 0,n1,n2;
+  const char s[2] = " ";
+  char *token;
+  char *aux2,*aux3;
   switch (comando) {
       case 'N':
-          cpu->Quant_Inteiros = 2; //debugando
-          cpu->valorInteiro = (int*) malloc(sizeof(int)*cpu->Quant_Inteiros);
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+                aux2 = token;
+            token = strtok(NULL, s);
+            i++;
+          }
+          n1 = atoi(aux2);
+          printf("Valor 1: %d\n", n1);
+          cpu->Quant_Inteiros = n1; //debugando
+          printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
           break;
       case 'D':
-
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+                aux2 = token;
+            token = strtok(NULL, s);
+            i++;
+          }
+          n1 = atoi(aux2);
+          printf("Valor 1: %d\n", n1);
+          printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
+          if(cpu->Alocado_V_inteiros == 0){
+            printf("\nENTROU em nao alocado");
+            cpu->valorInteiro = (int*) malloc(sizeof(int)*cpu->Quant_Inteiros);
+            cpu->valorInteiro[n1]=0;
+            cpu->Alocado_V_inteiros =1; //Foi alocado, porem apenas posição especificada foi inicializada com 0;
+          }
+          else{
+            printf("\nENTROU alocado");
+            cpu->valorInteiro[n1]=0; //Caso ja encontre alocado,basta inicializar tal posicao.
+          }
           break;
       case 'V':  /* Define o valor da variável inteira para n, onde n é um inteiro. */
-          cpu->valorInteiro[0] = n[0];
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+              aux2 = token;
+            else
+              aux3 = token;
+            token = strtok(NULL, s);
+            i++;
+          }
+          n1 = atoi(aux2);
+          n2 = atoi(aux3);
+          printf("Valor 1: %d\n", n1);
+          printf("Valor 2:%d\n", n2);
+          cpu->valorInteiro[n1] = n2;
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
       case 'A': /* Adiciona n ao valor da variável inteira, onde n é um inteiro. */
-          cpu->valorInteiro += n[0];
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+              aux2 = token;
+            else
+              aux3 = token;
+            token = strtok(NULL, s);
+            i++;
+          }
+          n1 = atoi(aux2);
+          n2 = atoi(aux3);
+          printf("Valor 1: %d\n", n1);
+          printf("Valor 2:%d\n", n2);
+          cpu->valorInteiro[n1] += n2;
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
       case 'S': /* Subtrai n do valor da variável inteira, onde n é um inteiro. */
-          cpu->valorInteiro -= n[0];
-          printf("Variavel inteira: %d\n", cpu->valorInteiro[0]);
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+              aux2 = token;
+            else
+              aux3 = token;
+          token = strtok(NULL, s);
+          i++;
+          }
+          n1 = atoi(aux2);
+          n2 = atoi(aux3);
+          printf("Valor 1: %d\n", n1);
+          printf("Valor 2:%d\n", n2);
+          cpu->valorInteiro[n1] -= n2;
+          printf("Variavel inteira: %d\n", cpu->valorInteiro[n1]);
           cpu->contadorProgramaAtual++;
           time->time++;
           break;
@@ -81,6 +126,15 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           time->time++;
           break;
       case 'F': /* Cria um novo processo simulado. */
+          token = strtok(instrucao, s);
+          while( token != NULL ) {
+            if(i == 1)
+                aux2 = token;
+            token = strtok(NULL, s);
+            i++;
+          }
+          n1 = atoi(aux2);
+          printf("Valor 1: %d\n", n1);
           novoProcesso = criarProcessoSimulado(time, processo);
           EnfileiraPronto(estadopronto, &novoProcesso);
           InserePcbTable(pcbTable, novoProcesso);

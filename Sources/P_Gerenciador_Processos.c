@@ -7,7 +7,8 @@ void Inicializa(EstadoEmExec *estadoexec, EstadoPronto *estadopronto, EstadoBloq
   FFVaziaBloqueado(estadobloqueado);
   FLVaziaPcbTable(pcbTable);
   FFilaVazia(&cpu->programa);
-  cpu->Quant_Inteiros =0;
+  cpu->Alocado_V_inteiros = 0;
+  cpu->Quant_Inteiros = 0;
   cpu->fatiaTempoUsada = 0;
   cpu->fatiaTempo = 0;
   cpu->contadorProgramaAtual = 0;
@@ -23,6 +24,8 @@ Processo criarPrimeiroSimulado(Programa *programa, Time *time, int Quant_Instruc
   processo.startupTime = time->time;
   processo.Estado_Processo.Inteiro = 0;
   processo.Estado_Processo.Cont = 0;
+  processo.Estado_Processo.Alocado_V_inteiros =0;
+  processo.Estado_Processo.Quant_Inteiros =0;
   processo.Estado_Processo.Tam = Quant_Instrucoes;
   for (int k = 0; k < Quant_Instrucoes; k++) {
       strcpy(processo.Estado_Processo.Programa[k], programa->instrucoes[k]);
@@ -38,8 +41,10 @@ Processo criarProcessoSimulado(Time *time, Processo *processoPai){
   processo.CotaCPU = 0;
   processo.startupTime = time->time;
   processo.Estado_Processo.Inteiro = processoPai->Estado_Processo.Inteiro;
-  processo.Estado_Processo.Cont = processoPai->Estado_Processo.Cont + 1;
+  processo.Estado_Processo.Cont = processoPai->Estado_Processo.Cont + 1;  //Modificar
   processo.Estado_Processo.Tam = processoPai->Estado_Processo.Tam;
+  processo.Estado_Processo.Alocado_V_inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
+  processo.Estado_Processo.Quant_Inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
   for (int i = 0; i < processoPai->Estado_Processo.Tam; i++) {
       strcpy(processo.Estado_Processo.Programa[i], processoPai->Estado_Processo.Programa[i]);
   }
@@ -62,6 +67,7 @@ Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
   cpu->fatiaTempoUsada = 0;
   cpu->Quant_Inteiros = processo.Estado_Processo.Quant_Inteiros;
   cpu->valorInteiro = processo.Estado_Processo.Inteiro;
+  cpu->Alocado_V_inteiros = processo.Estado_Processo.Alocado_V_inteiros;
 
   return processo;
 }
