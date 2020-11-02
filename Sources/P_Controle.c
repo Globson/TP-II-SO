@@ -35,7 +35,7 @@ int Executar_P_Controle(){
     //Escrevendo no pipe:
     write(fd[1], str_enviada,sizeof(str_enviada)+1);
     exit(0);
-    return 1; // return 1 se entrou em else
+    return 1; // return 1 se entrou em pai
   }
   else{ //Processo filho, o gerenciador.
     EstadoEmExec estadoexec;
@@ -47,7 +47,6 @@ int Executar_P_Controle(){
 
     Processo processoDesbloqueado;
     int desenfileirou;
-    //int pidProximoSimulado = 0;
 
     /* Criando Pipe. */
     if (pipe(fd_s) < 0) {
@@ -94,9 +93,7 @@ int Executar_P_Controle(){
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
-                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); //Comentei por estar incompleto e com bug
-                // ImprimePcbTable(&pcbTable);
-                // ImprimirCPU(&cpu);
+                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); 
                 break;
             case 'L': // Desbloqueia o primeiro processo simulado na fila bloqueada.
                 desenfileirou = DesenfileiraBloqueado(&estadobloqueado, &processoDesbloqueado);
@@ -110,6 +107,7 @@ int Executar_P_Controle(){
                 break;
             case 'M': // Imprime o tempo médio do ciclo e finaliza o sistema.
                 //TODO
+                //exit(0);
                 break;
             default:
                 // printf("Comando '%c' não aceito!\n", str_recebida[j]);
@@ -120,7 +118,6 @@ int Executar_P_Controle(){
     //ImprimePcbTable(&pcbTable);
 
 
-            //exit(0);
     return 0; // return 0 se entrou em else
   }
 }
