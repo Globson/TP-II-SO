@@ -8,5 +8,5 @@ void LerTerminal(char *str_enviada);
 int LerArquivo(char *str_enviada);
 int EstaVazia(Programa prog);
 void AdicionaProgramaFila(Programa *programa, char *instrucao);
-void RetiraProgramaFila(Programa *prog,char *instrucao,int indice);
+int RetiraProgramaFila(Programa *prog,char *instrucao,int indice);
 #endif //P_CONTROLE_H

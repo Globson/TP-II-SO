@@ -7,8 +7,12 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
 
   strcpy(instrucao, "");
   //printf("\ncpu->contadorProgramaAtual antes de requisitar instrucao: %d", cpu->contadorProgramaAtual);
-  RetiraProgramaFila(&cpu->programa, instrucao,cpu->contadorProgramaAtual);
 
+  int FinalPrograma =  RetiraProgramaFila(&cpu->programa, instrucao,cpu->contadorProgramaAtual);  //-1 fila estava vazia, 1 ainda tem instrucao do programa e 0 programa chegou ao fim.
+  if(FinalPrograma == 0){
+    RetiraPcbTable(pcbTable, estadoexec->iPcbTable, processo); // Precisa desalocar o programa.
+    *processo = ColocaOutroProcessoCPU(cpu, estadopronto);
+  }
   comando = instrucao[0];
 
 
@@ -121,7 +125,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           EnfileiraBloqueado(estadobloqueado, processo);
           cpu->contadorProgramaAtual++;
           time->time++;
-          *processo = ColocaOutroProcessoCPU(cpu, estadopronto);
+          // *processo = ColocaOutroProcessoCPU(cpu, estadopronto);
           break;
       case 'T': /* Termina esse processo simulado. */
           RetiraPcbTable(pcbTable, estadoexec->iPcbTable, processo); // Precisa desalocar o programa.

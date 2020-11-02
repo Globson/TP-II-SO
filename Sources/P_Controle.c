@@ -93,7 +93,7 @@ int Executar_P_Controle(){
         //printf("\n%c\n", str_recebida[j]);
         switch (str_recebida[j]) {
             case 'U': // Fim de uma unidade de tempo. Executa próxima instrução.
-                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo); 
+                ExecutaCPU(&cpu, &time, &pcbTable, &estadoexec, &estadobloqueado, &estadopronto, &processo);
                 break;
             case 'L': // Desbloqueia o primeiro processo simulado na fila bloqueada.
                 desenfileirou = DesenfileiraBloqueado(&estadobloqueado, &processoDesbloqueado);
@@ -168,7 +168,7 @@ void AdicionaProgramaFila(Programa *prog, char *instrucao){
     prog->Tras = prog->Tras % MAXTAM +1;
   }
 }
-void RetiraProgramaFila(Programa *prog,char *instrucao,int indice){
+int RetiraProgramaFila(Programa *prog,char *instrucao,int indice){
   /*if(EstaVazia(*prog))
     printf("Erro! A fila esta vazia.\n");
   else{
@@ -177,9 +177,14 @@ void RetiraProgramaFila(Programa *prog,char *instrucao,int indice){
   }
   */
   printf("\n---Indice da fila de instrucoes: %d---",indice);
-  if (EstaVazia(*prog) || indice >= prog->Tras) {
+  if(EstaVazia(*prog)){
+    printf("\n\tErro! Fila de programa Vazia!\n");
+    return -1;
+  }
+  else if (indice >= prog->Tras) {
       printf("\n\tErro! Posicao nao existe na fila de Instrucoes deste processo! Indice de tras: %d \n",prog->Tras);
-      return;
+      return 0;
   }
   strcpy(instrucao,prog->instrucoes[indice]);
+  return 1;
 }

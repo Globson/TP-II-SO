@@ -205,15 +205,11 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
   if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
       EnfileiraBloqueado(estadobloqueado, processo);
-      ImprimePronto(estadopronto);
-      ImprimeBloqueado(estadobloqueado);
-      // ImprimePcbTable(pcbTable);
       *processo = ColocaOutroProcessoCPU(cpu,estadopronto);//Ja que o processo atual foi bloqueado, colocaremos outro na CPU
     }
-   // else if(!strcmp(processo->estado,"BLOQUEADO")){
-     // printf("->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Entrei!");
-     // *processo = colocarProcessoCPU(cpu,estadopronto);
-   // }
+   else if(!strcmp(processo->estado,"BLOQUEADO")){ //Caso uma instrucao de bloqueio tenha sido realizada
+     *processo = ColocaOutroProcessoCPU(cpu,estadopronto);
+   }
 }
 
 void ImprimirCPU(Cpu *cpu){
