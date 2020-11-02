@@ -26,3 +26,18 @@ int colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto, Processo *processo)
   else
     return 0;
 }
+
+
+
+int a=0;
+while(a!=1 && a!=2){
+printf("\nDeseja ler do arquivo de entrada ou pelo teclado?\n\t1 - Arquivo de entrada\n\t2 - Teclado\nEntre: ");
+scanf("%d",&a);
+if(a!=1 && a!=2){
+  printf("\nErro! Entrada invalida!\n");
+}}
+if(a==1){
+  LerArquivo(str_enviada); // Ler a partir de um arquivo
+}else{
+  LerTerminal(str_enviada);
+}

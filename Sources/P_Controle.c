@@ -1,5 +1,5 @@
 #include "../Headers/P_Controle.h"
-
+#include "../Headers/P_Impressao.h"
 int Executar_P_Controle(){
   int fd[2],fd_s[2]; // File descriptor para Pipe
   pid_t pid;
@@ -106,7 +106,7 @@ int Executar_P_Controle(){
                 }
                 break;
             case 'I': // Imprime o estado atual do sistema.
-                //TODO chamar funções imprime
+                ImprimeSistemaCompleto(&cpu,&pcbTable,&estadobloqueado,&estadopronto);
                 break;
             case 'M': // Imprime o tempo médio do ciclo e finaliza o sistema.
                 //TODO
@@ -117,7 +117,7 @@ int Executar_P_Controle(){
         }
     }
     //ImprimeBloqueado(&estadobloqueado);
-    ImprimePcbTable(&pcbTable);
+    //ImprimePcbTable(&pcbTable);
 
 
             //exit(0);

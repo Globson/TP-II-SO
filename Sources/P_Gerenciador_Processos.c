@@ -241,7 +241,7 @@ void ImprimePronto(EstadoPronto *estadopronto){
           printf("\t%s", estadopronto->vetor[Aux].Estado_Processo.Programa[i]);
       printf("----------------------------------------------\n");
   }
-  printf("\n\t--Fim da Lista de Processos Prontos--\n");
+  printf("\n\t--Fim da fila de Processos Prontos--\n");
 }
 void ImprimeBloqueado(EstadoBloqueado *estadobloqueado){
   int Aux;
@@ -265,7 +265,7 @@ void ImprimeBloqueado(EstadoBloqueado *estadobloqueado){
           printf("\t%s", estadobloqueado->vetor[Aux].Estado_Processo.Programa[i]);
       printf("----------------------------------------------\n");
   }
-  printf("\n\t--Fim da Lista de Processos Bloqueados--\n");
+  printf("\n\t--Fim da fila de Processos Bloqueados--\n");
 }
 void ImprimePcbTable(PcbTable *pcbTable){
   int Aux;
@@ -289,7 +289,7 @@ void ImprimePcbTable(PcbTable *pcbTable){
           printf("\t%s", pcbTable->vetor[Aux].Estado_Processo.Programa[i]);
       printf("----------------------------------------------\n");
   }
-  printf("\n\t--Fim da Lista de Processos na Tabela--\n");
+  printf("\n\t--Fim da lista de Processos na Tabela--\n");
 }
 void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
     int prioridade = 0;
