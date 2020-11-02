@@ -3,8 +3,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
   char comando, instrucao[20];
   FILE *arqPrograma;
   Processo novoProcesso;
-  Programa novoPrograma;
-  FFilaVazia(&novoPrograma);
+
 
   strcpy(instrucao, "");
 
@@ -16,10 +15,11 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
   printf("\t\n-----------------Instucao -> %s",instrucao); //Debugando
 
 
-  int i = 0,n1=0,n2=0;
+  int i = 0,j=2,n1=0,n2=0;
   const char s[2] = " ";
   char *token;
-  char *aux2,*aux3,ArquivoNovo[20]="", Path[40] = "./Arquivos_Entrada/";
+  char *aux2,*aux3,ArquivoNovo[20]="", Path[40];
+  strcpy(Path,"./Arquivos_Entrada/");
   switch (comando) {
       case 'N':
           token = strtok(instrucao, s);
@@ -33,6 +33,8 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           printf("Valor 1: %d\n", n1);
           cpu->Quant_Inteiros = n1; //debugando
           printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
+          cpu->contadorProgramaAtual++;
+          time->time++;
           break;
       case 'D':
           token = strtok(instrucao, s);
@@ -55,6 +57,8 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
             printf("\nENTROU alocado");
             cpu->valorInteiro[n1]=0; //Caso ja encontre alocado,basta inicializar tal posicao.
           }
+          cpu->contadorProgramaAtual++;
+          time->time++;
           break;
       case 'V':  /* Define o valor da variável inteira para n, onde n é um inteiro. */
           token = strtok(instrucao, s);
@@ -117,7 +121,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
       case 'B': /* Bloqueia esse processo simulado. */
           EnfileiraBloqueado(estadobloqueado, processo);
           colocarProcessoCPU(cpu, estadopronto);
-          //cpu->contadorProgramaAtual++; // Remover???
+          cpu->contadorProgramaAtual++;
           time->time++;
           break;
       case 'T': /* Termina esse processo simulado. */
@@ -142,33 +146,36 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           time->time++;
           break;
       case 'R': /* Substitui o programa do processo simulado pelo programa no arquivo nome_do_arquivo e define o contador de programa para a primeira instrução desse novo programa. */
-          for(unsigned int j=2;j<strlen(instrucao);j++){   //Instrução R ainda com muitos bugs, nao consigo achar Path usando string. TODO
+          while((instrucao[j]!='.') && (instrucao[j+1]!='t') && (j<25)){ //Acho q funciona bem
             ArquivoNovo[j-2]=instrucao[j];
+            j++;
           }
+          strcat(ArquivoNovo,".txt");
           strcat(Path,ArquivoNovo);
-          Path[33]='\0';
-          //printf("Nome arquivo novo: %s  %lu",Path,strlen(instrucao));
-          printf("\nEntre com o nome do arquivo:");
-          scanf("%s",Path);
+          printf("\n\t->Nome arquivo novo: %s ",Path);
           arqPrograma = fopen(Path, "r");
           if (arqPrograma == NULL) {
-              printf("Erro, nao foi possivel abrir o arquivo ArquivoPrograma.txt\n");
+              printf("\n\t->Erro, nao foi possivel abrir o arquivo de entrada!");
           } else {
+            printf("\n\t->Arquivo aberto com sucesso!");
+            FFilaVazia(&cpu->programa);
             int Quant_Instrucoes=0;
               while ((fgets(instrucao, sizeof(instrucao), arqPrograma)) != NULL) {
-                  AdicionaProgramaFila(&novoPrograma, instrucao);
+                  AdicionaProgramaFila(&cpu->programa, instrucao);
+                  //printf("\n\tInstrucao lida: %s",instrucao);
                   Quant_Instrucoes++;
               }
-              novoPrograma.Tam = Quant_Instrucoes;
+              cpu->programa.Tam = Quant_Instrucoes;
               fclose(arqPrograma);
           }
 
           cpu->contadorProgramaAtual = 0;
-          cpu->valorInteiro = NULL;
+          free(cpu->valorInteiro);
+
           time->time++;
           break;
       default:
-          printf("Comando não suportado!\n");
+          printf("\n\t---->Comando não suportado! ( %c )<---\n",comando);
   }
 
 }
