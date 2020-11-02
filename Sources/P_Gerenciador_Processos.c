@@ -40,11 +40,12 @@ Processo criarProcessoSimulado(Time *time, Processo *processoPai, int Num_instru
   processo.prioridade = processoPai->prioridade;
   processo.CotaCPU = 0;
   processo.startupTime = time->time;
-  processo.Estado_Processo.Inteiro = processoPai->Estado_Processo.Inteiro;
+  if(processoPai->Estado_Processo.Alocado_V_inteiros)
+      processo.Estado_Processo.Inteiro = (int*)malloc(sizeof(int)*processoPai->Estado_Processo.Quant_Inteiros);
   processo.Estado_Processo.Cont = Num_instrucao;
   processo.Estado_Processo.Tam = processoPai->Estado_Processo.Tam;
   processo.Estado_Processo.Alocado_V_inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
-  processo.Estado_Processo.Quant_Inteiros = processoPai->Estado_Processo.Alocado_V_inteiros;
+  processo.Estado_Processo.Quant_Inteiros = processoPai->Estado_Processo.Quant_Inteiros;
   for (int i = 0; i < processoPai->Estado_Processo.Tam; i++) {
       strcpy(processo.Estado_Processo.Programa[i], processoPai->Estado_Processo.Programa[i]);
   }
@@ -59,9 +60,10 @@ Processo colocarProcessoCPU(Cpu *cpu, EstadoPronto *estadopronto){
   cpu->programa.Tam = processo.Estado_Processo.Tam;
 
   for (int i = 0; i < cpu->programa.Tam; i++) {
+    //printf("%d",cpu->programa.Tam);
       AdicionaProgramaFila(&cpu->programa, processo.Estado_Processo.Programa[i]);
   }
-
+  //troca de contexto
   cpu->contadorProgramaAtual = processo.Estado_Processo.Cont;
   cpu->fatiaTempo = 10;
   cpu->fatiaTempoUsada = 0;
@@ -142,13 +144,13 @@ void InserePcbTable(PcbTable *pcbTable, Processo processo){
 void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo){
   int Aux;
   if (VaziaPcbTable(pcbTable) || indice >= pcbTable->Ultimo) {
-      printf("Erro Posicao nao existe\n");
+      printf("\n\tErro! Posicao nao existe na PcbTable!\n");
       return;
   }
   *processo = pcbTable->vetor[indice];
   pcbTable->Ultimo--;
   for (Aux = indice; Aux < pcbTable->Ultimo; Aux++)
-      pcbTable->vetor[Aux] = pcbTable->vetor[Aux];
+      pcbTable->vetor[Aux] = pcbTable->vetor[Aux+1]; //coloquei o +1, acho q tava errado antes
 }
 
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
@@ -170,16 +172,21 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
   }
 
   //Atualizando processo simulado
-  processo->Estado_Processo.Inteiro = cpu->valorInteiro;
+  //processo->Estado_Processo.Inteiro = cpu->valorInteiro;
   processo->Estado_Processo.Cont = cpu->contadorProgramaAtual;
   processo->CotaCPU = cpu->fatiaTempoUsada;
+  processo->Estado_Processo.Alocado_V_inteiros = cpu->Alocado_V_inteiros;
+  processo->Estado_Processo.Quant_Inteiros = cpu->Quant_Inteiros;
   for (int i = 0; i < processo->Estado_Processo.Tam; i++) {
       strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
   }
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
   if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
       EnfileiraBloqueado(estadobloqueado, processo);
-      DesenfileiraPronto(estadopronto,processo);}
+      ImprimePronto(estadopronto);
+      //DesenfileiraPronto(estadopronto,processo);
+      //colocarProcessoCPU(cpu,estadopronto); //Ja que o processo atual foi bloqueado, colocaremos outro na CPU
+    }
 }
 
 void ImprimirCPU(Cpu *cpu){
@@ -206,10 +213,11 @@ void ImprimePronto(EstadoPronto *estadopronto){
       printf("Tempo CPU: %d\n", estadopronto->vetor[Aux].CotaCPU);
       printf("Tempo Inicio: %d\n", estadopronto->vetor[Aux].startupTime);
       printf("Prioridade: %d\n", estadopronto->vetor[Aux].prioridade);
-      printf("VALOR %d",estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros); //Debugando
-      // for(int i=0;i<estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
-        // printf("Valor Inteiro %d: %d\n", estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros+1,estadopronto->vetor[Aux].Estado_Processo.Inteiro[i]);
-      // }
+      printf("Quantidade de variaveis: %d\n",estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros); //Debugando
+      if(estadopronto->vetor[Aux].Estado_Processo.Alocado_V_inteiros)
+        for(int i=0;i<estadopronto->vetor[Aux].Estado_Processo.Quant_Inteiros;i++){
+            printf("Valor inteiro da variavel ( %d ): %d\n", i,estadopronto->vetor[Aux].Estado_Processo.Inteiro[i]);
+        }
       printf("Contador de Programa: %d\n", estadopronto->vetor[Aux].Estado_Processo.Cont);
       printf("Programa: \n");
       for (int i = 0; i < estadopronto->vetor[Aux].Estado_Processo.Tam; i++)

@@ -169,11 +169,18 @@ void AdicionaProgramaFila(Programa *prog, char *instrucao){
     prog->Tras = prog->Tras % MAXTAM +1;
   }
 }
-void RetiraProgramaFila(Programa *prog,char *instrucao){
-  if(EstaVazia(*prog))
+void RetiraProgramaFila(Programa *prog,char *instrucao,int indice){
+  /*if(EstaVazia(*prog))
     printf("Erro! A fila esta vazia.\n");
   else{
     strcpy(instrucao,prog->instrucoes[prog->Frente]);
     prog->Frente = prog->Frente % MAXTAM +1;
   }
+  */
+  printf("\n---Indice da fila de instrucoes: %d---",indice);
+  if (EstaVazia(*prog) || indice >= prog->Tras) {
+      printf("\n\tErro! Posicao nao existe na fila de Instrucoes deste processo! Indice de tras: %d \n",prog->Tras);
+      return;
+  }
+  strcpy(instrucao,prog->instrucoes[indice]);
 }

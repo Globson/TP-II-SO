@@ -6,8 +6,8 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
 
 
   strcpy(instrucao, "");
-
-  RetiraProgramaFila(&cpu->programa, instrucao);
+  //printf("\ncpu->contadorProgramaAtual antes de requisitar instrucao: %d", cpu->contadorProgramaAtual);
+  RetiraProgramaFila(&cpu->programa, instrucao,cpu->contadorProgramaAtual);
 
   comando = instrucao[0];
 
@@ -31,7 +31,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           printf("Valor 1: %d\n", n1);
-          cpu->Quant_Inteiros = n1; //debugando
+          cpu->Quant_Inteiros = n1;
           printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
           cpu->contadorProgramaAtual++;
           time->time++;
@@ -46,7 +46,6 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           }
           n1 = atoi(aux2);
           printf("Valor 1: %d\n", n1);
-          printf("Valor guardado em CPU: %d",cpu->Quant_Inteiros);
           if(cpu->Alocado_V_inteiros == 0){
             printf("\nENTROU em nao alocado");
             cpu->valorInteiro = (int*) malloc(sizeof(int)*cpu->Quant_Inteiros);
@@ -120,9 +119,9 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
       //
       case 'B': /* Bloqueia esse processo simulado. */
           EnfileiraBloqueado(estadobloqueado, processo);
-          colocarProcessoCPU(cpu, estadopronto);
           cpu->contadorProgramaAtual++;
           time->time++;
+          //colocarProcessoCPU(cpu, estadopronto);
           break;
       case 'T': /* Termina esse processo simulado. */
           RetiraPcbTable(pcbTable, estadoexec->iPcbTable, processo); // Precisa desalocar o programa.
@@ -140,6 +139,10 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           n1 = atoi(aux2);
           printf("Valor 1: %d\n", n1);
           novoProcesso = criarProcessoSimulado(time, processo, n1);
+           if(processo->Estado_Processo.Alocado_V_inteiros!=0)
+              for(int k=0; k<processo->Estado_Processo.Quant_Inteiros;k++){
+                  novoProcesso.Estado_Processo.Inteiro[k]= cpu->valorInteiro[k];
+             }
           EnfileiraPronto(estadopronto, &novoProcesso);
           InserePcbTable(pcbTable, novoProcesso);
           cpu->contadorProgramaAtual++; // Necessário para atualizar o contador do processo pai para a instrução logo após a instrução F.
@@ -175,6 +178,8 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
           time->time++;
           break;
       default:
+          cpu->contadorProgramaAtual++;
+          time->time++;
           printf("\n\t---->Comando não suportado! ( %c )<---\n",comando);
   }
 

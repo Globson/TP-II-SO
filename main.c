@@ -26,5 +26,6 @@ int main(int argc, char const *argv[]) {
     printf("\t%s\n",str_enviada);
 */
   Executar_P_Controle(); //Comecei os testes mesmo estado incompleto
+  printf("\n\tExecutou TUDO!");
   return 0;
 }
