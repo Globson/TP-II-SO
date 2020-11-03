@@ -70,5 +70,4 @@ void ImprimirCPU(Cpu *cpu);
 void ImprimePronto(EstadoPronto *estadopronto);
 void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
 void ImprimePcbTable(PcbTable *pcbTable);
-void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
 #endif //P_GERENCIADOR_PROCESSOS_H

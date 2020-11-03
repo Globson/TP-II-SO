@@ -308,47 +308,53 @@ void ImprimePcbTable(PcbTable *pcbTable){
   }
   printf("\n\t--Fim da lista de Processos na Tabela--\n");
 }
-void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
-    int prioridade = 0;
-    //Modificar esse for depois, para somente colocar número de processos necessarios, e não MAXTAM.
-    //Coloca os processos que vão entrar em execução na tabela de processos
-    for(int i = 0;i < MAXTAM-1;i++){
-        RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
-        pcbTable->vetor[i] = *processo;
-        for (int x = 0; x < pcbTable->vetor[i].Estado_Processo.Tam; x++) {
-              strcpy(pcbTable->vetor[i].Estado_Processo.Programa[x], cpu->programa.instrucoes[x]);
+
+void ExecutaCPU2(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
+
+
+  RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
+
+  switch (processo->prioridade){
+      case 0:
+          cpu->fatiaTempoUsada += 1; break;
+      case 1:
+          cpu->fatiaTempoUsada += 2; break;
+      case 2:
+          cpu->fatiaTempoUsada += 4; break;
+      case 3:
+          cpu->fatiaTempoUsada += 8; break;
+      default:
+          printf("Erro ao atualizar fatia de tempo CPU!\n");
+  }
+
+  //Atualizando processo simulado
+  processo->Estado_Processo.Cont = cpu->contadorProgramaAtual;
+  processo->CotaCPU = cpu->fatiaTempoUsada;
+  processo->Estado_Processo.Alocado_V_inteiros = cpu->Alocado_V_inteiros;
+  processo->Estado_Processo.Quant_Inteiros = cpu->Quant_Inteiros;
+  for (int i = 0; i < processo->Estado_Processo.Tam; i++) {
+      strcpy(processo->Estado_Processo.Programa[i], cpu->programa.instrucoes[i]);
+  }
+  if(cpu->Alocado_V_inteiros)
+      processo->Estado_Processo.Inteiro=cpu->valorInteiro;
+  pcbTable->vetor[estadoexec->iPcbTable] = *processo;
+  if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
+      if(processo->prioridade> 0 && processo->prioridade<=3){
+            printf("\n --- Prioridade de processo de PID: %d mudada de %d para %d --- \n",processo->pid,processo->prioridade,pcbTable->vetor[estadoexec->iPcbTable].prioridade+1);
+            processo->prioridade++;
+            pcbTable->vetor[estadoexec->iPcbTable].prioridade++;
           }
+      EnfileiraBloqueado(estadobloqueado, processo);
+      *processo = ColocaOutroProcessoCPU(cpu,estadopronto);//Ja que o processo atual foi bloqueado, colocaremos outro na CPU
     }
-    //Escalonador
-    while(prioridade < 4){
-        for(int j = pcbTable->Primeiro;j < pcbTable->Ultimo;j++){
-            //atualiza fatia de tempo disponivel
-            if(pcbTable->vetor[j].prioridade == prioridade){
-                switch (pcbTable->vetor[j].prioridade){
-            case 0:
-                cpu->fatiaTempo += 1; break;
-            case 1:
-                cpu->fatiaTempo += 2; break;
-            case 2:
-                cpu->fatiaTempo += 4; break;
-            case 3:
-                cpu->fatiaTempo += 8; break;
-            default:
-                printf("Erro ao atualizar fatia de tempo CPU!\n");
-        }
-                strcpy(pcbTable->vetor[j].estado, "EM EXECUCAO");
-                pcbTable->vetor[j].Estado_Processo.Inteiro = cpu->valorInteiro;
-                pcbTable->vetor[j].Estado_Processo.Cont = cpu->contadorProgramaAtual;
-                pcbTable->vetor[j].CotaCPU= cpu->fatiaTempoUsada;
-                    if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
-                        EnfileiraBloqueado(estadobloqueado, &pcbTable->vetor[j]);
-                        //diminui a prioridade do processo;
-                        if(pcbTable->vetor[j].prioridade < 3){
-                            pcbTable->vetor[j].prioridade += 1;
-                        }
-                    }
-                }
-            }
-        prioridade++;
-    }
+  else if(cpu->fatiaTempoUsada < cpu->fatiaTempo) {
+      if(processo->prioridade> 0 && processo->prioridade<=3){
+            printf("\n --- Prioridade de processo de PID: %d mudada de %d para %d --- \n",processo->pid,processo->prioridade,pcbTable->vetor[estadoexec->iPcbTable].prioridade-1);
+            processo->prioridade--;
+            pcbTable->vetor[estadoexec->iPcbTable].prioridade--;
+          }
+  }
+   else if(!strcmp(processo->estado,"BLOQUEADO")){ //Caso uma instrucao de bloqueio tenha sido realizada
+     *processo = ColocaOutroProcessoCPU(cpu,estadopronto);
+   }
 }

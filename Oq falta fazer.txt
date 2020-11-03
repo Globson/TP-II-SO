@@ -1,10 +1,7 @@
-->Estava escalonando a pouco, mexi na linha 188 e 187 do gerenciador de processos e parava, dava erro, temos q olhar aquilo
-
 
 -> Testar kkkk não faço a menor ideia quanto a bugs
 
-
-
+Funções DEPRECATED:
 
 void LerTerminal(char *str_enviada){
     char str[20];
@@ -13,4 +10,50 @@ void LerTerminal(char *str_enviada){
         strcat(str_enviada,str);
     }while(str[0] != 'M');
 
+}
+
+
+void escalonamentoMultiplasFilas(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo){
+    int prioridade = 0;
+    //Modificar esse for depois, para somente colocar número de processos necessarios, e não MAXTAM.
+    //Coloca os processos que vão entrar em execução na tabela de processos
+    for(int i = 0;i < MAXTAM-1;i++){
+        RodaInstrucao(cpu, time, estadoexec, pcbTable, estadobloqueado, estadopronto, processo);
+        pcbTable->vetor[i] = *processo;
+        for (int x = 0; x < pcbTable->vetor[i].Estado_Processo.Tam; x++) {
+              strcpy(pcbTable->vetor[i].Estado_Processo.Programa[x], cpu->programa.instrucoes[x]);
+          }
+    }
+    //Escalonador
+    while(prioridade < 4){
+        for(int j = pcbTable->Primeiro;j < pcbTable->Ultimo;j++){
+            //atualiza fatia de tempo disponivel
+            if(pcbTable->vetor[j].prioridade == prioridade){
+                switch (pcbTable->vetor[j].prioridade){
+            case 0:
+                cpu->fatiaTempo += 1; break;
+            case 1:
+                cpu->fatiaTempo += 2; break;
+            case 2:
+                cpu->fatiaTempo += 4; break;
+            case 3:
+                cpu->fatiaTempo += 8; break;
+            default:
+                printf("Erro ao atualizar fatia de tempo CPU!\n");
+        }
+                strcpy(pcbTable->vetor[j].estado, "EM EXECUCAO");
+                pcbTable->vetor[j].Estado_Processo.Inteiro = cpu->valorInteiro;
+                pcbTable->vetor[j].Estado_Processo.Cont = cpu->contadorProgramaAtual;
+                pcbTable->vetor[j].CotaCPU= cpu->fatiaTempoUsada;
+                    if((cpu->fatiaTempoUsada >= cpu->fatiaTempo)){
+                        EnfileiraBloqueado(estadobloqueado, &pcbTable->vetor[j]);
+                        //diminui a prioridade do processo;
+                        if(pcbTable->vetor[j].prioridade < 3){
+                            pcbTable->vetor[j].prioridade += 1;
+                        }
+                    }
+                }
+            }
+        prioridade++;
+    }
 }
