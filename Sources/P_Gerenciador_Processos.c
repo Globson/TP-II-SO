@@ -207,6 +207,11 @@ void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoex
       processo->Estado_Processo.Inteiro=cpu->valorInteiro;
   pcbTable->vetor[estadoexec->iPcbTable] = *processo;
   if(cpu->fatiaTempoUsada >= cpu->fatiaTempo){ // caso a fatia ultrapassar a cota estabelecida, programa é bloqueado e aguarda novo escalonamento.
+      if(processo->prioridade<3 && processo->prioridade>=0){
+        printf("\n --- Prioridade de processo de PID: %d mudada de %d para %d --- \n",processo->pid,processo->prioridade,pcbTable->vetor[estadoexec->iPcbTable].prioridade+1);
+        processo->prioridade++;
+        pcbTable->vetor[estadoexec->iPcbTable].prioridade++;
+      }
       EnfileiraBloqueado(estadobloqueado, processo);
       *processo = ColocaOutroProcessoCPU(cpu,estadopronto);//Ja que o processo atual foi bloqueado, colocaremos outro na CPU
     }
