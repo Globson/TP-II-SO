@@ -27,9 +27,20 @@ int Executar_P_Controle(){
     }
   */
   if(pid > 0){ //processo pai
-    LerArquivo(str_enviada); // Ler a partir de um arquivo
     //Para escrever no pai, teremos que fechar a leitura do Pipe.
     close(fd[0]);
+    int a=0;
+    while(a!=1 && a!=2){
+    printf("\nDeseja ler do arquivo de entrada ou pelo teclado?\n\t1 - Arquivo de entrada\n\t2 - Teclado\nEntre: ");
+    scanf("%d",&a);
+    if(a!=1 && a!=2){
+      printf("\nErro! Entrada invalida!\n");
+    }}
+    if(a==1){
+      LerArquivo(str_enviada); // Ler a partir de um arquivo
+    }else{
+      LerTerminal(str_enviada);
+    }
     printf("String enviada pelo Controle(PID %i) para o Gerenciador: %s \n", getpid(),str_enviada);
 
     //Escrevendo no pipe:
@@ -73,19 +84,19 @@ int Executar_P_Controle(){
     Prog.Tam = Quant_Instrucoes;
 
     Processo processo = criarPrimeiroSimulado(&Prog, &time, Quant_Instrucoes, getpid());
-    EnfileiraPronto(&estadopronto, &processo);
-
-    // ImprimePronto(&estadopronto);
-
-    InserePcbTable(&pcbTable, processo);
 
     /* No filho, vamos ler. Então vamos fechar a entrada de ESCRITA do pipe. */
     close(fd[1]);
 
     /* Lendo o que foi escrito no pipe, e armazenando isso em 'str_recebida'. */
     read(fd[0], str_recebida, sizeof(str_recebida));
+    printf("String recebida pelo Gerenciador de PID %i enviada pelo Controle: '%s'\n\n", getpid(), str_recebida);
 
-    printf("String LIDA pelo MANAGER de PID %i recebida pelo COMMANDER: '%s'\n\n", getpid(), str_recebida);
+    EnfileiraPronto(&estadopronto, &processo);
+
+    // ImprimePronto(&estadopronto);
+
+    InserePcbTable(&pcbTable, processo);
 
 
     processo = colocarProcessoCPU(&cpu, &estadopronto);
@@ -143,13 +154,13 @@ int LerArquivo(char *str_enviada){ //Simplifiquei algumas coisas
 void LerTerminal(char *str_enviada){
     char comando;
     int i = 0;
+    printf("Entre com o comando um a um (M finaliza leitura):\n");
     do{
-        scanf(" %c",&comando);
+        scanf("%c",&comando);
         str_enviada[i] = comando;
-        str_enviada[i+1]= ' ';
+        strcat(str_enviada," ");
         i+=2; //Adicionei espaços entre os caracteres para manter padrão da string.
     }while(comando != 'M');
-
 }
 
 void FFilaVazia(Programa *prog){

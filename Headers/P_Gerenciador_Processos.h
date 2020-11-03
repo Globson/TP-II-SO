@@ -65,6 +65,7 @@ int VaziaPcbTable(PcbTable *pcbTable);
 void InserePcbTable(PcbTable *pcbTable, Processo processo);
 void RetiraPcbTable(PcbTable *pcbTable, int indice, Processo *processo);
 void ExecutaCPU(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
+void ExecutaCPU2(Cpu *cpu, Time *time, PcbTable *pcbTable, EstadoEmExec *estadoexec, EstadoBloqueado *estadobloqueado, EstadoPronto *estadopronto, Processo *processo);
 void ImprimirCPU(Cpu *cpu);
 void ImprimePronto(EstadoPronto *estadopronto);
 void ImprimeBloqueado(EstadoBloqueado *estadobloqueado);
