@@ -23,7 +23,7 @@ void RodaInstrucao(Cpu *cpu, Time *time, EstadoEmExec *estadoexec, PcbTable *pcb
   comando = instrucao[0];
 
 
-  printf("\nExecucao de instrucao do Processo de PID: %d -> %s\n",pcbTable->vetor[estadoexec->iPcbTable].pid,instrucao); //Debugando
+  printf("\nExecucao de instrucao -> %s\n",instrucao); //Debugando
 
 
   int i = 0,j=2,n1=0,n2=0;
